@@ -21,7 +21,7 @@
 - [📊 System Visualizations](#system-visualizations)
   - [Co-Pilot Mode Interaction Flow](#co-pilot-mode-interaction-flow)
   - [Eventstorming of Research Phases](#eventstorming-of-research-phases)
-- [🔮 Future Directions](#future-directions)
+- [🔭 Vision and Outlook](#vision-and-outlook)
   - [Limitations and Considerations](#limitations-and-considerations)
   - [Future Development](#future-development)
 
@@ -586,21 +586,18 @@ Each phase involves specific agents, produces certain artifacts, and may include
 3. **Output**: Literature review summary stored in PhDStudentAgent's state
 
 **Event Sequence**:
-```
-UserInputProvided → 
-  PhDStudentActivated →
-    SearchQueryGenerated →
-    ArxivSearchExecuted →
-    PaperSummariesReviewed →
-    RelevantPapersIdentified →
-    FullTextRetrieved →
-    PaperAnalyzed →
-    PaperSummaryCreated →
-    [Repeat for multiple papers] →
-  LiteratureReviewCompiled →
-  UserApprovalRequested (if in co-pilot mode) →
-LiteratureReviewPhaseCompleted
-```
+1. **User Input Provided**: The user provides a research topic to investigate
+2. **PhDStudent Agent Activated**: The system activates the PhDStudentAgent to handle literature review
+3. **Search Query Generation**: The agent generates search queries based on the research topic
+4. **ArxivSearch Execution**: The system searches for relevant papers on arXiv
+5. **Paper Summaries Review**: The agent reviews the summaries of retrieved papers
+6. **Relevant Papers Identification**: The agent selects the most relevant papers for detailed analysis
+7. **Full Text Retrieval**: The system downloads the full text of selected papers
+8. **Paper Analysis**: The agent analyzes each paper for relevant information
+9. **Paper Summary Creation**: The agent creates a concise summary of each paper
+10. **Literature Review Compilation**: All paper summaries are compiled into a comprehensive review
+11. **User Approval Request** (in co-pilot mode): The user is asked to approve or provide feedback
+12. **Literature Review Phase Completion**: The phase is marked as complete and the workflow advances
 
 **User Interaction** (Co-pilot Mode):
 - After the literature review is compiled, the user is presented with the compiled review
@@ -632,18 +629,16 @@ Upon completion, the workflow progresses to the Plan Formulation phase, passing 
 3. **Output**: Structured research plan
 
 **Event Sequence**:
-```
-LiteratureReviewPhaseCompleted →
-  PostdocAgentActivated →
-  PhDStudentAgentActivated →
-    DialogueInitiated →
-    ResearchApproachesDiscussed →
-    PlanDrafted →
-    PlanRefined →
-  PlanFinalized →
-  UserApprovalRequested (if in co-pilot mode) →
-PlanFormulationPhaseCompleted
-```
+1. **Literature Review Phase Completion**: The system marks the literature review phase as complete
+2. **Postdoc Agent Activation**: The PostdocAgent is activated to lead the planning phase
+3. **PhDStudent Agent Activation**: The PhDStudentAgent is activated to support planning
+4. **Dialogue Initiation**: The agents begin a collaborative dialogue about the research direction
+5. **Research Approaches Discussion**: Various potential approaches are discussed based on literature
+6. **Plan Drafting**: An initial research plan is drafted with objectives and methods
+7. **Plan Refinement**: The plan is iteratively refined based on agent discussion
+8. **Plan Finalization**: The PostdocAgent finalizes the research plan
+9. **User Approval Request** (in co-pilot mode): The user is asked to review and approve the plan
+10. **Plan Formulation Phase Completion**: The phase is marked as complete and the workflow advances
 
 **User Interaction** (Co-pilot Mode):
 - After the plan is finalized, the user is presented with the research plan
@@ -679,22 +674,20 @@ Upon completion, the workflow progresses to the Data Preparation phase, passing 
 3. **Output**: Functional code for dataset loading and preparation
 
 **Event Sequence**:
-```
-PlanFormulationPhaseCompleted →
-  MLEngineerAgentActivated →
-  SWEngineerAgentActivated →
-    DataRequirementsAnalyzed →
-    HFDataSearchExecuted →
-    DatasetsEvaluated →
-    OptimalDatasetSelected →
-    DataLoadingCodeDrafted →
-    CodeExecuted →
-    ExecutionResultsEvaluated →
-    CodeRefined →
-  FinalDataPreparationCodeSubmitted →
-  UserApprovalRequested (if in co-pilot mode) →
-DataPreparationPhaseCompleted
-```
+1. **Plan Formulation Phase Completion**: The system marks the plan formulation phase as complete
+2. **MLEngineer Agent Activation**: The MLEngineerAgent is activated to handle data preparation
+3. **SWEngineer Agent Activation**: The SWEngineerAgent is activated to support implementation
+4. **Data Requirements Analysis**: The MLEngineerAgent analyzes the plan to determine data needs
+5. **HFDataSearch Execution**: The system searches for relevant datasets on Hugging Face
+6. **Datasets Evaluation**: The agent evaluates multiple datasets for suitability
+7. **Optimal Dataset Selection**: The most appropriate dataset is selected for the research
+8. **Data Loading Code Drafting**: Initial code for loading and preprocessing data is created
+9. **Code Execution**: The data loading code is executed to verify it works correctly
+10. **Execution Results Evaluation**: The results of code execution are assessed
+11. **Code Refinement**: The code is refined based on execution results and SWEngineer feedback
+12. **Final Data Preparation Code Submission**: The complete data preparation code is submitted
+13. **User Approval Request** (in co-pilot mode): The user is asked to review and approve the code
+14. **Data Preparation Phase Completion**: The phase is marked as complete and the workflow advances
 
 **User Interaction** (Co-pilot Mode):
 - After data preparation code is finalized, the user is presented with the code
@@ -726,19 +719,17 @@ Upon completion, the workflow progresses to the Running Experiments phase, passi
 3. **Output**: Experimental code, results, and visualizations
 
 **Event Sequence**:
-```
-DataPreparationPhaseCompleted →
-  MLESolverActivated →
-    InitialCodeImplemented →
-    CodeExecuted →
-    ResultsEvaluated →
-    CodeImproved →
-    [Repeated for multiple iterations] →
-    VisualizationsGenerated →
-  ExperimentResultsCompiled →
-  UserApprovalRequested (if in co-pilot mode) →
-RunningExperimentsPhaseCompleted
-```
+1. **Data Preparation Phase Completion**: The system marks the data preparation phase as complete
+2. **MLESolver Activation**: The specialized MLESolver is activated to run experiments
+3. **Initial Code Implementation**: The MLESolver generates the initial experimental code 
+4. **Code Execution**: The code is executed in a controlled environment
+5. **Results Evaluation**: The execution results are evaluated against research objectives
+6. **Code Improvement**: The code is iteratively improved based on execution results
+7. **Multiple Iterations**: Steps 4-6 are repeated multiple times to optimize results
+8. **Visualizations Generation**: Figures and charts are generated to visualize results
+9. **Experiment Results Compilation**: All experiment results are compiled for analysis
+10. **User Approval Request** (in co-pilot mode): The user is asked to review and approve results
+11. **Running Experiments Phase Completion**: The phase is marked as complete and the workflow advances
 
 **User Interaction** (Co-pilot Mode):
 - After experiments are completed, the user is presented with the code and results
@@ -771,19 +762,17 @@ Upon completion, the workflow progresses to the Results Interpretation phase, pa
 3. **Output**: Formal interpretation of experimental results
 
 **Event Sequence**:
-```
-RunningExperimentsPhaseCompleted →
-  PostdocAgentActivated →
-  PhDStudentAgentActivated →
-    DialogueInitiated →
-    ResultsAnalyzed →
-    LiteratureContextApplied →
-    InterpretationDeveloped →
-    ImplicationsDiscussed →
-  InterpretationFinalized →
-  UserApprovalRequested (if in co-pilot mode) →
-ResultsInterpretationPhaseCompleted
-```
+1. **Running Experiments Phase Completion**: The system marks the experiments phase as complete
+2. **Postdoc Agent Activation**: The PostdocAgent is activated to lead interpretation
+3. **PhDStudent Agent Activation**: The PhDStudentAgent is activated to support interpretation
+4. **Dialogue Initiation**: The agents begin a collaborative dialogue about the results
+5. **Results Analysis**: The experimental results are analyzed in detail
+6. **Literature Context Application**: Results are compared with findings from the literature review
+7. **Interpretation Development**: A comprehensive interpretation of results is developed
+8. **Implications Discussion**: The broader implications of the findings are discussed
+9. **Interpretation Finalization**: The comprehensive interpretation is finalized
+10. **User Approval Request** (in co-pilot mode): The user is asked to review and approve interpretation
+11. **Results Interpretation Phase Completion**: The phase is marked as complete and the workflow advances
 
 **User Interaction** (Co-pilot Mode):
 - After the interpretation is finalized, the user is presented with the interpretation
@@ -825,24 +814,22 @@ Upon completion, the workflow progresses to the Report Writing phase, passing th
 3. **Output**: Complete research report in LaTeX format and PDF (if compilation enabled)
 
 **Event Sequence**:
-```
-ResultsInterpretationPhaseCompleted →
-  PaperSolverActivated →
-    PaperScaffoldGenerated →
-    AbstractWritten →
-    IntroductionWritten →
-    BackgroundWritten →
-    RelatedWorkWritten →
-    MethodsWritten →
-    ExperimentalSetupWritten →
-    ResultsWritten →
-    DiscussionWritten →
-    FiguresIncorporated →
-    LaTeXCompiled →
-  ReportFinalized →
-  UserApprovalRequested (if in co-pilot mode) →
-ReportWritingPhaseCompleted
-```
+1. **Results Interpretation Phase Completion**: The system marks the interpretation phase as complete
+2. **PaperSolver Activation**: The specialized PaperSolver is activated to generate the report
+3. **Paper Scaffold Generation**: An initial structure for the paper is created
+4. **Abstract Writing**: The abstract summarizing the research is written
+5. **Introduction Writing**: The introduction section is drafted
+6. **Background Writing**: The background section establishing context is written
+7. **Related Work Writing**: The related work section reviewing literature is written
+8. **Methods Writing**: The methodology section is drafted
+9. **Experimental Setup Writing**: The experimental setup details are documented
+10. **Results Writing**: The results section presenting findings is written
+11. **Discussion Writing**: The discussion section interpreting results is written
+12. **Figures Incorporation**: Figures, tables and charts are incorporated into the document
+13. **LaTeX Compilation**: The LaTeX document is compiled to generate a PDF
+14. **Report Finalization**: The complete research report is finalized
+15. **User Approval Request** (in co-pilot mode): The user is asked to review and approve the report
+16. **Report Writing Phase Completion**: The phase is marked as complete and the workflow advances
 
 **User Interaction** (Co-pilot Mode):
 - After the report is finalized, the user is presented with the LaTeX and/or PDF
@@ -874,17 +861,15 @@ Upon completion, the workflow progresses to the Report Refinement phase, passing
 3. **Output**: Final research report or decision to iterate
 
 **Event Sequence**:
-```
-ReportWritingPhaseCompleted →
-  ReviewersAgentActivated →
-    MultipleReviewsGenerated →
-    ReviewsAnalyzed →
-  PhDStudentAgentActivated →
-    RevisionDecisionMade →
-    UserApprovalRequested (if in co-pilot mode) →
-  [If revision needed, return to appropriate previous phase] →
-ReportRefinementPhaseCompleted
-```
+1. **Report Writing Phase Completion**: The system marks the report writing phase as complete
+2. **Reviewers Agent Activation**: The ReviewersAgent is activated to evaluate the report
+3. **Multiple Reviews Generation**: Reviews are generated from different reviewer perspectives
+4. **Reviews Analysis**: The reviews are analyzed for feedback and improvement suggestions
+5. **PhDStudent Agent Activation**: The PhDStudentAgent is activated to address reviews
+6. **Revision Decision Making**: A decision is made whether to accept the report or revise it
+7. **User Approval Request** (in co-pilot mode): The user decides whether to accept or revise
+8. **Potential Return to Previous Phase**: If revision is needed, workflow returns to appropriate phase
+9. **Report Refinement Phase Completion**: The phase is marked as complete when report is accepted
 
 **User Interaction** (Co-pilot Mode):
 - After reviews are generated, the user is presented with the reviews
@@ -903,7 +888,7 @@ ReportRefinementPhaseCompleted
 **Transition**:
 Upon completion, the entire research workflow is finalized, and all artifacts are available in the `research_dir` directory.
 
-## 🔮 Future Directions
+## 🔭 Vision and Outlook
 
 - **Ethical Considerations** 🔬: Automated research tools raise important questions about authorship, attribution, and the responsible use of AI in scientific discovery.
 
