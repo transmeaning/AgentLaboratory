@@ -2,29 +2,34 @@
 
 ## Table of Contents
 
-- [Introduction](#introduction)
+- [📚 Introduction](#introduction)
   - [Purpose and Goals](#purpose-and-goals)
   - [Key Features](#key-features)
-- [Developer Documentation](#developer-documentation)
+- [🏗️ Developer Documentation](#developer-documentation)
   - [System Architecture](#system-architecture)
   - [Code Structure](#code-structure)
-  - [Agent Roles in Detail](#agent-roles-in-detail)
-  - [Specialized Solvers in Detail](#specialized-solvers-in-detail)
-  - [External Tools in Detail](#external-tools-in-detail)
-  - [LLM Integration](#llm-integration)
-- [End-User Guide](#end-user-guide)
-  - [Installation](#installation)
-  - [Configuration](#configuration)
-  - [Running Research Projects](#running-research-projects)
-  - [Research Phases: Eventstorming](#research-phases-eventstorming)
-  - [Tips for Effective Use](#tips-for-effective-use)
-  - [Troubleshooting](#troubleshooting)
-- [Conclusion](#conclusion)
+  - [🤖 Agent Roles in Detail](#agent-roles-in-detail)
+  - [🧩 Specialized Solvers in Detail](#specialized-solvers-in-detail)
+  - [🛠️ External Tools in Detail](#external-tools-in-detail)
+  - [🔌 LLM Integration](#llm-integration)
+- [👨‍💻 End-User Guide](#end-user-guide)
+  - [⚙️ Installation](#installation)
+  - [🔧 Configuration](#configuration)
+  - [🚀 Running Research Projects](#running-research-projects)
+  - [🔄 Research Phases: Eventstorming](#research-phases-eventstorming)
+  - [💡 Tips for Effective Use](#tips-for-effective-use)
+  - [❓ Troubleshooting](#troubleshooting)
+- [🔍 Conclusion](#conclusion)
   - [Key Strengths](#key-strengths)
   - [Limitations and Considerations](#limitations-and-considerations)
   - [Future Directions](#future-directions)
+- [📊 System Visualizations](#system-architecture-diagram)
+  - [System Architecture Diagram](#system-architecture-diagram)
+  - [Research Workflow Sequence Diagram](#research-workflow-sequence-diagram)
+  - [Co-Pilot Mode Interaction Flow](#co-pilot-mode-interaction-flow)
+  - [Agent Role and Responsibility Chart](#agent-role-and-responsibility-chart)
 
-## Introduction
+## 📚 Introduction
 
 Agent Laboratory is an end-to-end autonomous research workflow system designed to assist human researchers in implementing their research ideas. It consists of specialized agents driven by Large Language Models (LLMs) that support the entire research process—from conducting literature reviews and formulating plans to executing experiments and writing comprehensive reports.
 
@@ -48,7 +53,7 @@ The primary purpose of Agent Laboratory is to augment human researchers by autom
 - **Checkpointing system**: Progress can be saved and resumed at different stages
 - **Multi-language support**: Can operate in various languages beyond English
 
-## Developer Documentation
+## 🏗️ Developer Documentation
 
 ### System Architecture
 
@@ -58,53 +63,35 @@ Agent Laboratory follows a component-based architecture centered around a workfl
 
 1. **LaboratoryWorkflow (ai_lab_repo.py)**: The central orchestrator that manages the research workflow, coordinates agent activities, and tracks progress through different phases.
 
-2. **Agent Roles (agents.py)**: Specialized agents that handle different aspects of the research process:
-   - **PhDStudentAgent**: Conducts literature reviews, participates in plan formulation, and helps with results interpretation
-   - **PostdocAgent**: Directs the PhD student in formulating research plans and interpreting results
-   - **ProfessorAgent**: Directs report writing and provides high-level academic perspective
-   - **MLEngineerAgent**: Handles data preparation and running experiments
-   - **SWEngineerAgent**: Collaborates with ML Engineer on data preparation
-   - **ReviewersAgent**: Evaluates the final research report
+2. **Agent Roles (agents.py)**: Specialized agents handling different aspects of the research process:
+   - PhDStudentAgent: Literature reviews, planning, results interpretation
+   - PostdocAgent: Research plan guidance, results interpretation
+   - ProfessorAgent: Report writing oversight
+   - MLEngineerAgent: Data preparation, experiments
+   - SWEngineerAgent: Software implementation
+   - ReviewersAgent: Report evaluation
+   
+   *See [Agent Roles in Detail](#agent-roles-in-detail) section for comprehensive descriptions*
 
 3. **Specialized Solvers**:
-   - **MLESolver (mlesolver.py)**: Handles ML experimentation through code generation, execution, and iterative improvement
-   - **PaperSolver (papersolver.py)**: Generates research reports in LaTeX format through section-by-section construction
+   - MLESolver: Handles ML experimentation
+   - PaperSolver: Generates research reports
+   
+   *See [Specialized Solvers in Detail](#specialized-solvers-in-detail) section for implementation details*
 
-4. **External Tools (tools.py)**:
-   - Literature search tools (ArxivSearch, SemanticScholarSearch)
-   - Dataset search tool (HFDataSearch)
-   - Code execution environment
+4. **External Tools**: Literature search, dataset discovery, code execution
+   
+   *See [External Tools in Detail](#external-tools-in-detail) section for implementation details*
 
-5. **Support Utilities (utils.py, inference.py)**:
-   - LLM API integration and management
-   - LaTeX compilation
-   - File and directory operations
-   - Token management and cost tracking
+5. **Support Utilities**: LLM integration, file operations, token management
 
 #### Flow of Information
 
-The research workflow follows a sequential progression through distinct phases:
+The research workflow progresses through sequential phases:
 
-1. **Literature Review**: The PhD student agent searches for and summarizes relevant papers.
-2. **Plan Formulation**: The postdoc and PhD student agents collaborate to develop a research plan.
-3. **Experimentation**:
-   - **Data Preparation**: ML and SW engineer agents find and prepare datasets.
-   - **Running Experiments**: The MLESolver generates and iteratively improves experimental code.
-4. **Results Interpretation**: Postdoc and PhD student agents analyze experimental results.
-5. **Report Writing**: The PaperSolver generates a comprehensive research report.
-6. **Report Refinement**: The report is evaluated by reviewer agents and potentially improved through further iterations.
+1. Literature Review → 2. Plan Formulation → 3. Experimentation (Data Preparation, Running Experiments) → 4. Results Interpretation → 5. Report Writing → 6. Report Refinement
 
-#### Design Patterns
-
-1. **Command Pattern**: Used throughout the system to encapsulate actions as objects, particularly in the MLESolver and PaperSolver where commands like Edit and Replace are implemented.
-
-2. **Strategy Pattern**: The LLM integration system uses different strategies for different model providers.
-
-3. **Template Method Pattern**: The BaseAgent class defines the skeleton of operations with specific implementations provided by concrete agent subclasses.
-
-4. **Factory Method Pattern**: Used for creating specialized agents with specific configurations.
-
-5. **Observer Pattern**: The workflow orchestrator observes the progress of different phases and responds accordingly.
+*For detailed event sequences and data flows of each phase, see [Research Phases: Eventstorming](#research-phases-eventstorming)*
 
 ### Code Structure
 
@@ -190,222 +177,39 @@ The system follows a layered architecture with class hierarchies for agents and 
    - `solve()`: Performs incremental improvements
    - `process_command()`: Handles command execution
 
-### Agent Roles in Detail
+### 🤖 Agent Roles in Detail
 
-#### PhDStudentAgent
+The Agent Laboratory implements a collaborative multi-agent architecture where each agent fulfills a specialized role. The table below summarizes each agent's responsibilities and implementation details:
 
-The PhD Student agent serves as the primary worker in the research process, acting as a versatile contributor across multiple phases:
+| Agent | Primary Responsibilities | Implementation Details | Key Methods |
+|-------|--------------------------|------------------------|-------------|
+| **PhDStudentAgent** | • Literature reviews<br>• Research plan collaboration<br>• Data preparation<br>• Results interpretation<br>• Report writing assistance<br>• Reviewer feedback response | • Maintains literature review database<br>• Tracks participation phases<br>• Stores experiment and report information | • `add_review()`<br>• `format_review()`<br>• `requirements_txt()` |
+| **PostdocAgent** | • Research plan direction<br>• Results interpretation guidance<br>• Expertise and critique | • High-level guidance focus<br>• Phase-specific context<br>• Stores plan and results information | • Phase-specific context providers<br>• Dialogue generation for PhD guidance |
+| **ProfessorAgent** | • Report writing direction<br>• README documentation<br>• Academic oversight | • Active during report writing<br>• Stores report history<br>• Report writing specialized context | • `generate_readme()` |
+| **MLEngineerAgent** | • Data preparation<br>• Dataset selection<br>• Experiment implementation<br>• Results visualization | • ML-focused implementation<br>• Collaborates with SWEngineer | • Phase-specific context<br>• Code generation support<br>• Dataset search |
+| **SWEngineerAgent** | • Software implementation<br>• Code quality<br>• Engineering practices | • Software engineering focus<br>• Collaborates with MLEngineer | • Phase-specific context<br>• Code review support |
+| **ReviewersAgent** | • Report evaluation<br>• Constructive feedback<br>• Quality scoring | • Simulates multiple reviewers<br>• Implements scoring system<br>• Academic review format | • `inference()` with multiple perspectives |
 
-**Responsibilities**:
-- Conducting comprehensive literature reviews
-- Collaborating with the Postdoc on research plan formulation
-- Working with engineers on data preparation
-- Interpreting experimental results
-- Assisting in report writing
-- Responding to reviewer feedback
+### 🧩 Specialized Solvers in Detail
 
-**Implementation Details**:
-- Maintains a database of literature review entries
-- Tracks phases it has participated in
-- Stores experiment and report information
-- Implements specialized commands for literature search
+The Agent Laboratory includes specialized solver components that handle complex research tasks. The table below summarizes these solvers:
 
-**Key Methods**:
-- `add_review()`: Adds papers to the literature review database
-- `format_review()`: Generates a formatted summary of the literature review
-- `requirements_txt()`: Generates requirements.txt for the project
+| Solver | Core Functionality | Implementation Details | Key Components |
+|--------|-------------------|------------------------|----------------|
+| **MLESolver** | • Initial code generation<br>• Controlled execution<br>• Performance evaluation<br>• Iterative improvement<br>• Visualization generation | • Command-based interface<br>• LLM-based code generation<br>• Code version history<br>• Reward function<br>• Safety measures | • `initial_solve()`<br>• `solve()`<br>• `reflect_code()`<br>• `process_command()`<br>• `run_code()`<br>• `feedback()` |
+| **PaperSolver** | • Paper scaffolding<br>• Section construction<br>• Results incorporation<br>• Iterative improvement<br>• LaTeX compilation | • Command-based interface<br>• Section-specific prompts<br>• Paper version history<br>• Quality scoring<br>• LaTeX error handling | • `initial_solve()`<br>• `solve()`<br>• `gen_initial_report()`<br>• `process_command()`<br>• `system_prompt()` |
 
-#### PostdocAgent
+### 🛠️ External Tools in Detail
 
-The Postdoc agent acts as a mentor and guide for the PhD Student, providing direction and expertise:
+The Agent Laboratory leverages several external tools to support the research process. The table below summarizes these tools:
 
-**Responsibilities**:
-- Directing the PhD Student in research plan formulation
-- Guiding results interpretation
-- Providing expertise and critique
+| Tool | Features | Implementation Details | Key Methods |
+|------|----------|------------------------|-------------|
+| **ArxivSearch** | • Semantic paper search<br>• Metadata retrieval<br>• Full-text extraction<br>• Query optimization | • Uses arxiv library<br>• PDF text extraction<br>• Rate limit handling<br>• Query processing | • `find_papers_by_str()`<br>• `retrieve_full_paper_text()`<br>• `_process_query()` |
+| **HFDataSearch** | • Dataset semantic search<br>• Popularity filtering<br>• Dataset property analysis<br>• Detailed information retrieval | • Uses HF datasets library<br>• TF-IDF vectorization<br>• Multi-factor normalization<br>• Detailed formatting | • `retrieve_ds()`<br>• `results_str()`<br>• `_normalize()` |
+| **Code Execution Environment** | • Sandboxed execution<br>• Timeout enforcement<br>• Error capture<br>• Output formatting<br>• Resource limitations | • ThreadPoolExecutor<br>• Timeout mechanisms<br>• stdout/stderr capture<br>• Safety protections<br>• Output size limits | • `execute_code()`<br>• matplotlib support<br>• Error handling |
 
-**Implementation Details**:
-- Focuses on high-level guidance rather than implementation
-- Implements specialized context based on the current phase
-- Stores plan and results information
-
-**Key Methods**:
-- Phase-specific context providers
-- Dialogue generation for guiding the PhD Student
-
-#### ProfessorAgent
-
-The Professor agent provides senior academic oversight, focusing particularly on report writing:
-
-**Responsibilities**:
-- Directing the report writing process
-- Generating README documentation
-- Providing high-level academic perspective
-
-**Implementation Details**:
-- Primarily active during the report writing phase
-- Stores historical report information
-- Implements specialized context for report writing
-
-**Key Methods**:
-- `generate_readme()`: Creates a README.md file for the project
-
-#### MLEngineerAgent and SWEngineerAgent
-
-These agents collaborate on the technical implementation aspects of the research:
-
-**Responsibilities**:
-- Data preparation and dataset selection
-- Code implementation for experiments
-- Visualization and results generation
-
-**Implementation Details**:
-- MLEngineer focuses on machine learning aspects
-- SWEngineer focuses on software engineering practices
-- They collaborate through shared context and dialogue
-
-**Key Methods**:
-- Phase-specific context and prompt generation
-- Support for code generation and dataset search
-
-#### ReviewersAgent
-
-The Reviewers agent provides critical evaluation of the final research report:
-
-**Responsibilities**:
-- Evaluating the research report from multiple perspectives
-- Providing constructive feedback
-- Assigning scores on different dimensions
-
-**Implementation Details**:
-- Simulates multiple reviewer perspectives
-- Implements a comprehensive scoring system
-- Provides detailed feedback in academic review format
-
-**Key Methods**:
-- `inference()`: Generates reviews from multiple reviewer perspectives
-
-### Specialized Solvers in Detail
-
-#### MLESolver
-
-The MLESolver handles the implementation and optimization of machine learning experiments:
-
-**Core Functionality**:
-- Generating initial code based on research plans
-- Executing code in a controlled environment
-- Evaluating code performance and results
-- Iteratively improving code through edits
-- Generating visualizations and results
-
-**Implementation Details**:
-- Implements a command-based interface for code modification
-- Uses LLM-based code generation and improvement
-- Maintains history of code versions and their performance
-- Implements a reward function for evaluating code quality
-- Includes safety measures for code execution
-
-**Key Components**:
-- `initial_solve()`: Generates the initial code implementation
-- `solve()`: Performs iterative improvements
-- `reflect_code()`: Analyzes code to generate improvement insights
-- `process_command()`: Handles Edit and Replace commands
-- `run_code()`: Safely executes generated code
-- `feedback()`: Provides feedback on code execution
-
-#### PaperSolver
-
-The PaperSolver handles the generation and refinement of research reports in LaTeX format:
-
-**Core Functionality**:
-- Generating initial paper scaffolding
-- Constructing papers section by section (abstract, introduction, methods, etc.)
-- Incorporating experimental results and visualizations
-- Iteratively improving paper quality
-- Compiling LaTeX to PDF
-
-**Implementation Details**:
-- Implements a command-based interface for paper modification
-- Uses section-specific prompts and guidance
-- Maintains history of paper versions and their quality scores
-- Implements a reward function for evaluating paper quality
-- Includes LaTeX compilation and error handling
-
-**Key Components**:
-- `initial_solve()`: Generates the initial paper scaffold
-- `solve()`: Performs iterative improvements
-- `gen_initial_report()`: Generates section-by-section content
-- `process_command()`: Handles Edit and Replace commands for LaTeX
-- `system_prompt()`: Provides section-specific guidance for paper writing
-
-### External Tools in Detail
-
-#### ArxivSearch
-
-Provides functionality for searching and retrieving research papers from arXiv:
-
-**Features**:
-- Semantic search for papers based on queries
-- Retrieval of paper metadata (title, authors, abstract, etc.)
-- Full-text extraction from PDF papers
-- Query processing and optimization
-
-**Implementation Details**:
-- Uses the arxiv Python library for API access
-- Implements PDF text extraction
-- Handles rate limiting and timeout errors
-- Processes queries to fit within API limitations
-
-**Key Methods**:
-- `find_papers_by_str()`: Searches for papers by query string
-- `retrieve_full_paper_text()`: Downloads and extracts text from paper PDFs
-- `_process_query()`: Optimizes queries for the arXiv API
-
-#### HFDataSearch
-
-Provides functionality for searching and exploring datasets on Hugging Face:
-
-**Features**:
-- Semantic search for datasets based on queries
-- Filtering by popularity metrics (likes, downloads)
-- Analysis of dataset properties (train/test splits, size)
-- Detailed dataset information retrieval
-
-**Implementation Details**:
-- Uses the Hugging Face datasets library
-- Implements TF-IDF vectorization for semantic search
-- Normalizes and weighs search results by multiple factors
-- Provides detailed dataset information
-
-**Key Methods**:
-- `retrieve_ds()`: Searches for datasets matching query and criteria
-- `results_str()`: Formats dataset information as readable strings
-- `_normalize()`: Normalizes metrics for better comparison
-
-#### Code Execution Environment
-
-Provides a secure environment for executing generated code:
-
-**Features**:
-- Sandboxed code execution
-- Timeout enforcement
-- Error capture and reporting
-- Output capturing and formatting
-- Resource usage limitations
-
-**Implementation Details**:
-- Uses ThreadPoolExecutor for controlled execution
-- Implements timeout mechanisms
-- Captures stdout/stderr for output analysis
-- Prevents harmful operations
-- Limits output size to prevent overflow
-
-**Key Components**:
-- `execute_code()`: Main function for safe code execution
-- Support for matplotlib figure generation
-- Error handling and formatting
-
-### LLM Integration
+### 🔌 LLM Integration
 
 Agent Laboratory is designed to work with multiple Large Language Model providers, with a unified interface for all LLM interactions.
 
@@ -480,11 +284,11 @@ Agent Laboratory allows for granular configuration of LLM usage:
 - **Model Selection**: Command-line interface for specifying the primary LLM backend
 - **Version Compatibility**: Supports different versions of provider APIs
 
-## End-User Guide
+## 👨‍💻 End-User Guide
 
 This section provides comprehensive guidance for using Agent Laboratory as an end-user.
 
-### Installation
+### ⚙️ Installation
 
 #### Prerequisites
 
@@ -523,7 +327,7 @@ Before installing Agent Laboratory, ensure you have:
    
    Note: If you cannot install pdflatex, you can still use Agent Laboratory by setting the `--compile-latex` flag to `false`.
 
-### Configuration
+### 🔧 Configuration
 
 #### API Keys
 
@@ -566,7 +370,7 @@ Additional configuration options can be specified through command-line arguments
 - `--mlesolver-max-steps "3"`: Sets the maximum number of optimization steps for MLESolver
 - `--papersolver-max-steps "5"`: Sets the maximum number of optimization steps for PaperSolver
 
-### Running Research Projects
+### 🚀 Running Research Projects
 
 #### Basic Usage
 
@@ -612,7 +416,7 @@ To run Agent Laboratory in another language:
 python ai_lab_repo.py --api-key "API_KEY_HERE" --research-topic "YOUR RESEARCH IDEA (in your language)" --llm-backend "o1-mini" --language "中文"
 ```
 
-### Research Phases: Eventstorming
+### 🔄 Research Phases: Eventstorming
 
 This section provides a detailed walkthrough of the entire research workflow in Agent Laboratory, presented in an Eventstorming format that traces the process from initial user input to final output.
 
@@ -621,14 +425,14 @@ This section provides a detailed walkthrough of the entire research workflow in 
 The research process in Agent Laboratory is organized into sequential phases:
 
 ```
-[User Input] → [Literature Review] → [Plan Formulation] → [Data Preparation] 
-→ [Running Experiments] → [Results Interpretation] → [Report Writing] 
-→ [Report Refinement] → [Final Output]
+[User Input] → [📖 Literature Review] → [📝 Plan Formulation] → [🔍 Data Preparation] 
+→ [🧪 Running Experiments] → [📊 Results Interpretation] → [📄 Report Writing] 
+→ [✏️ Report Refinement] → [Final Output]
 ```
 
 Each phase involves specific agents, produces certain artifacts, and may include user interaction points (especially in co-pilot mode). Let's examine each phase in detail.
 
-#### Phase 1: Literature Review
+#### 📖 Literature Review Phase
 
 **Purpose**: Gather and analyze relevant research papers to establish the current state of knowledge on the research topic.
 
@@ -674,7 +478,7 @@ LiteratureReviewPhaseCompleted
 **Transition**:
 Upon completion, the workflow progresses to the Plan Formulation phase, passing the literature review summary as context.
 
-#### Phase 2: Plan Formulation
+#### 📝 Plan Formulation Phase
 
 **Purpose**: Develop a comprehensive research plan based on the literature review.
 
@@ -720,7 +524,7 @@ PlanFormulationPhaseCompleted
 **Transition**:
 Upon completion, the workflow progresses to the Data Preparation phase, passing the research plan as context.
 
-#### Phase 3: Data Preparation
+#### 🔍 Data Preparation Phase
 
 **Purpose**: Find and prepare suitable datasets for the proposed experiments.
 
@@ -768,7 +572,7 @@ DataPreparationPhaseCompleted
 **Transition**:
 Upon completion, the workflow progresses to the Running Experiments phase, passing the data preparation code as context.
 
-#### Phase 4: Running Experiments
+#### 🧪 Running Experiments Phase
 
 **Purpose**: Implement and execute the experiments outlined in the research plan.
 
@@ -813,7 +617,7 @@ RunningExperimentsPhaseCompleted
 **Transition**:
 Upon completion, the workflow progresses to the Results Interpretation phase, passing the experimental code, results, and visualizations as context.
 
-#### Phase 5: Results Interpretation
+#### 📊 Results Interpretation Phase
 
 **Purpose**: Analyze and interpret the experimental results.
 
@@ -860,7 +664,7 @@ ResultsInterpretationPhaseCompleted
 **Transition**:
 Upon completion, the workflow progresses to the Report Writing phase, passing the interpretation as context along with all previous artifacts.
 
-#### Phase 6: Report Writing
+#### 📄 Report Writing Phase
 
 **Purpose**: Generate a comprehensive research report in LaTeX format.
 
@@ -917,7 +721,7 @@ ReportWritingPhaseCompleted
 **Transition**:
 Upon completion, the workflow progresses to the Report Refinement phase, passing the report as context.
 
-#### Phase 7: Report Refinement
+#### ✏️ Report Refinement Phase
 
 **Purpose**: Evaluate and potentially improve the research report based on reviewer feedback.
 
@@ -963,7 +767,7 @@ ReportRefinementPhaseCompleted
 **Transition**:
 Upon completion, the entire research workflow is finalized, and all artifacts are available in the `research_dir` directory.
 
-### Tips for Effective Use
+### 💡 Tips for Effective Use
 
 #### Writing Effective Notes
 
@@ -1009,27 +813,27 @@ For complex research projects:
 4. **Use checkpoints strategically**: Save after major phases and iterate as needed
 5. **Leverage co-pilot mode**: Provide guidance at critical decision points
 
-### Troubleshooting
+### ❓ Troubleshooting
 
 #### Common Issues and Solutions
 
-1. **API Errors**:
+1. **API Errors** 🔑:
    - **Issue**: "No API key provided" or authentication errors
    - **Solution**: Check that your API keys are correctly set and have sufficient credits
 
-2. **LaTeX Compilation Errors**:
+2. **LaTeX Compilation Errors** 📄:
    - **Issue**: "Compilation failed" or missing PDF output
    - **Solution**: Run with `--compile-latex "false"` or install pdflatex
 
-3. **Memory or Resource Limitations**:
+3. **Memory or Resource Limitations** 💾:
    - **Issue**: Slow performance or crashes during experimentation
    - **Solution**: Add notes to limit dataset size or model complexity
 
-4. **Agent Getting Stuck**:
+4. **Agent Getting Stuck** 🔄:
    - **Issue**: Agent repeating the same actions or not progressing
    - **Solution**: Use co-pilot mode to intervene, or restart from the last checkpoint
 
-5. **Low-Quality Results**:
+5. **Low-Quality Results** 📉:
    - **Issue**: Experiments or reports don't meet expectations
    - **Solution**: Try using a more capable LLM model or provide more detailed notes
 
@@ -1043,41 +847,41 @@ If you encounter issues not covered here:
 
 Remember that Agent Laboratory is a research tool and results may vary based on the complexity of your research topic and the capabilities of the LLM models used.
 
-## Conclusion
+## 🔍 Conclusion
 
 Agent Laboratory represents a significant advancement in the application of Large Language Models to scientific research. By creating a collaborative multi-agent system that mimics the structure of a research team, it provides a powerful tool for accelerating and enhancing the research process.
 
 ### Key Strengths
 
-- **End-to-End Automation**: Agent Laboratory covers the entire research workflow, from literature review to report generation, providing a comprehensive solution for research automation.
+- **End-to-End Automation** 🔄: Agent Laboratory covers the entire research workflow, from literature review to report generation, providing a comprehensive solution for research automation.
 
-- **Multi-Agent Architecture**: The use of specialized agents with distinct roles creates a collaborative system that leverages the strengths of different perspectives and expertise areas.
+- **Multi-Agent Architecture** 🤖: The use of specialized agents with distinct roles creates a collaborative system that leverages the strengths of different perspectives and expertise areas.
 
-- **Iterative Improvement**: The system's use of feedback loops and checkpointing allows for continuous improvement and refinement of research artifacts.
+- **Iterative Improvement** 📈: The system's use of feedback loops and checkpointing allows for continuous improvement and refinement of research artifacts.
 
-- **Human Collaboration**: The co-pilot mode enables effective human-AI collaboration, allowing researchers to guide the process while automating time-consuming tasks.
+- **Human Collaboration** 👥: The co-pilot mode enables effective human-AI collaboration, allowing researchers to guide the process while automating time-consuming tasks.
 
-- **Adaptability**: The system can be applied to a wide range of research domains and methodologies, making it a versatile tool for different research contexts.
+- **Adaptability** 🔧: The system can be applied to a wide range of research domains and methodologies, making it a versatile tool for different research contexts.
 
 ### Limitations and Considerations
 
-- **LLM Capabilities**: The quality of research outputs is fundamentally dependent on the capabilities of the underlying LLM models.
+- **LLM Capabilities** 🧠: The quality of research outputs is fundamentally dependent on the capabilities of the underlying LLM models.
 
-- **Resource Requirements**: More complex research projects may require significant computational resources and LLM API costs.
+- **Resource Requirements** 💻: More complex research projects may require significant computational resources and LLM API costs.
 
-- **Domain Expertise**: While Agent Laboratory can assist with research, it cannot replace the depth of domain expertise that human researchers bring to their fields.
+- **Domain Expertise** 🎓: While Agent Laboratory can assist with research, it cannot replace the depth of domain expertise that human researchers bring to their fields.
 
-- **Ethical Considerations**: Automated research tools raise important questions about authorship, attribution, and the responsible use of AI in scientific discovery.
+- **Ethical Considerations** 🔬: Automated research tools raise important questions about authorship, attribution, and the responsible use of AI in scientific discovery.
 
 ### Future Directions
 
 Agent Laboratory represents an early step in the evolution of AI-assisted research. Future developments may include:
 
-- Integration with more specialized research tools and databases
-- Support for additional LLM backends as new models emerge
-- Enhanced domain-specific capabilities for fields like healthcare, physics, or social sciences
-- Improved mechanisms for capturing and incorporating human expertise
-- More sophisticated multi-agent collaboration patterns
+- Integration with more specialized research tools and databases 🔗
+- Support for additional LLM backends as new models emerge 🤖
+- Enhanced domain-specific capabilities for fields like healthcare, physics, or social sciences 🔬
+- Improved mechanisms for capturing and incorporating human expertise 👥
+- More sophisticated multi-agent collaboration patterns 🔄
 
 By combining the creativity and guidance of human researchers with the efficiency and scalability of AI agents, Agent Laboratory points toward a future where AI becomes an indispensable partner in scientific discovery, helping researchers to explore more ideas, conduct more thorough analyses, and communicate their findings more effectively.
 
@@ -1086,3 +890,242 @@ As the system continues to evolve, it has the potential to democratize research 
 ---
 
 *This documentation was created based on a comprehensive analysis of the AgentLaboratory codebase as of March 2024. For the most up-to-date information, please refer to the project's GitHub repository.*
+
+## System Architecture Diagram
+
+The following diagram illustrates the overall architecture of the Agent Laboratory system:
+
+```mermaid
+graph TD
+    User[User Input] --> LW[LaboratoryWorkflow]
+    
+    subgraph "Core Orchestration"
+        LW --> Phase1[Literature Review]
+        Phase1 --> Phase2[Plan Formulation]
+        Phase2 --> Phase3[Data Preparation]
+        Phase3 --> Phase4[Running Experiments]
+        Phase4 --> Phase5[Results Interpretation]
+        Phase5 --> Phase6[Report Writing]
+        Phase6 --> Phase7[Report Refinement]
+    end
+    
+    subgraph "Agent Layer"
+        Phase1 --> PhDStudent[PhDStudentAgent]
+        Phase2 --> Postdoc[PostdocAgent]
+        Phase2 --> PhDStudent
+        Phase3 --> MLEngineer[MLEngineerAgent]
+        Phase3 --> SWEngineer[SWEngineerAgent]
+        Phase4 --> MLE[MLESolver]
+        Phase5 --> Postdoc
+        Phase5 --> PhDStudent
+        Phase6 --> Paper[PaperSolver]
+        Phase6 --> Professor[ProfessorAgent]
+        Phase7 --> Reviewers[ReviewersAgent]
+        Phase7 --> PhDStudent
+    end
+    
+    subgraph "External Tools"
+        PhDStudent --> ArxivSearch[ArxivSearch]
+        MLEngineer --> HFData[HFDataSearch]
+        MLE --> CodeExec[Code Execution]
+    end
+    
+    subgraph "LLM Layer"
+        PhDStudent --> LLM[LLM API]
+        Postdoc --> LLM
+        Professor --> LLM
+        MLEngineer --> LLM
+        SWEngineer --> LLM
+        MLE --> LLM
+        Paper --> LLM
+        Reviewers --> LLM
+    end
+    
+    subgraph "Output Artifacts"
+        LW --> LitReview[Literature Review]
+        LW --> ResearchPlan[Research Plan]
+        LW --> DataCode[Data Preparation Code]
+        LW --> ExpCode[Experiment Code]
+        LW --> Results[Results & Visualizations]
+        LW --> Report[LaTeX Report]
+        LW --> PDF[PDF Document]
+        LW --> ReadMe[README.md]
+    end
+```
+
+## Research Workflow Sequence Diagram
+
+This diagram shows the sequential flow of the research process and the interactions between different agents:
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant LW as LaboratoryWorkflow
+    participant PhD as PhDStudentAgent
+    participant PD as PostdocAgent
+    participant ML as MLEngineerAgent
+    participant SW as SWEngineerAgent
+    participant MLE as MLESolver
+    participant PS as PaperSolver
+    participant PROF as ProfessorAgent
+    participant REV as ReviewersAgent
+    
+    User->>LW: Research Topic
+    
+    %% Literature Review Phase
+    LW->>PhD: Start Literature Review
+    PhD->>PhD: Generate Search Queries
+    PhD->>PhD: Execute ArxivSearch
+    PhD->>PhD: Analyze Papers
+    PhD->>PhD: Compile Literature Review
+    PhD->>LW: Literature Review Complete
+    
+    %% Plan Formulation Phase
+    LW->>PD: Start Plan Formulation
+    LW->>PhD: Contribute to Plan
+    PD->>PhD: Guide Plan Development
+    PhD->>PD: Provide Literature Insights
+    PD->>LW: Research Plan Complete
+    
+    %% Data Preparation Phase
+    LW->>ML: Start Data Preparation
+    LW->>SW: Support Data Preparation
+    ML->>ML: Find Datasets
+    ML->>SW: Draft Data Processing Code
+    SW->>ML: Review and Refine Code
+    ML->>LW: Data Preparation Complete
+    
+    %% Running Experiments Phase
+    LW->>MLE: Start Experimentation
+    MLE->>MLE: Generate Initial Code
+    MLE->>MLE: Execute Code
+    MLE->>MLE: Analyze Results
+    MLE->>MLE: Improve Code
+    MLE->>MLE: Generate Visualizations
+    MLE->>LW: Experiments Complete
+    
+    %% Results Interpretation Phase
+    LW->>PD: Start Results Interpretation
+    LW->>PhD: Support Interpretation
+    PD->>PhD: Guide Analysis
+    PhD->>PD: Contribute Insights
+    PD->>LW: Interpretation Complete
+    
+    %% Report Writing Phase
+    LW->>PS: Start Report Writing
+    PS->>PS: Generate Paper Scaffold
+    PS->>PS: Write Paper Sections
+    PS->>PS: Incorporate Figures
+    LW->>PROF: Generate README
+    PS->>LW: Report Complete
+    
+    %% Report Refinement Phase
+    LW->>REV: Start Report Refinement
+    REV->>REV: Generate Reviews
+    LW->>PhD: Address Reviews
+    PhD->>LW: Refinements Complete
+    
+    LW->>User: Final Research Artifacts
+```
+
+## Co-Pilot Mode Interaction Flow
+
+This diagram illustrates how user interactions occur in co-pilot mode:
+
+```mermaid
+graph TD
+    Start[Start Research Process] --> Phase1[Literature Review Phase]
+    
+    Phase1 --> PhD1[PhDStudentAgent Works]
+    PhD1 --> Output1[Literature Review Output]
+    Output1 --> User1{User Review}
+    User1 -->|Approve| Phase2[Plan Formulation Phase]
+    User1 -->|Feedback| PhD1
+    
+    Phase2 --> Agents2[PostdocAgent & PhDStudentAgent Work]
+    Agents2 --> Output2[Research Plan Output]
+    Output2 --> User2{User Review}
+    User2 -->|Approve| Phase3[Data Preparation Phase]
+    User2 -->|Feedback| Agents2
+    
+    Phase3 --> Agents3[MLEngineer & SWEngineer Work]
+    Agents3 --> Output3[Data Preparation Code]
+    Output3 --> User3{User Review}
+    User3 -->|Approve| Phase4[Experimentation Phase]
+    User3 -->|Feedback| Agents3
+    
+    Phase4 --> MLE[MLESolver Works]
+    MLE --> Output4[Experiment Results]
+    Output4 --> User4{User Review}
+    User4 -->|Approve| Phase5[Results Interpretation Phase]
+    User4 -->|Feedback| MLE
+    
+    Phase5 --> Agents5[PostdocAgent & PhDStudentAgent Work]
+    Agents5 --> Output5[Results Interpretation]
+    Output5 --> User5{User Review}
+    User5 -->|Approve| Phase6[Report Writing Phase]
+    User5 -->|Feedback| Agents5
+    
+    Phase6 --> PS[PaperSolver Works]
+    PS --> Output6[Research Report]
+    Output6 --> User6{User Review}
+    User6 -->|Approve| Phase7[Report Refinement Phase]
+    User6 -->|Feedback| PS
+    
+    Phase7 --> Agents7[ReviewersAgent & PhDStudentAgent Work]
+    Agents7 --> Output7[Final Report]
+    Output7 --> User7{User Review}
+    User7 -->|Approve| Complete[Research Complete]
+    User7 -->|Feedback| PrevPhase[Return to Appropriate Phase]
+    
+    PrevPhase --> Phase1
+    PrevPhase --> Phase2
+    PrevPhase --> Phase3
+    PrevPhase --> Phase4
+    PrevPhase --> Phase5
+    PrevPhase --> Phase6
+```
+
+## Agent Role and Responsibility Chart
+
+This diagram maps the agents to their primary responsibilities across research phases:
+
+```mermaid
+graph TD
+    classDef litReview fill:#f9d5e5,stroke:#333,stroke-width:1px
+    classDef planning fill:#e3eaa7,stroke:#333,stroke-width:1px
+    classDef dataPrep fill:#b5ead7,stroke:#333,stroke-width:1px
+    classDef experiments fill:#c7ceea,stroke:#333,stroke-width:1px
+    classDef interpretation fill:#ffdac1,stroke:#333,stroke-width:1px
+    classDef report fill:#ff9aa2,stroke:#333,stroke-width:1px
+    classDef review fill:#d0d1ff,stroke:#333,stroke-width:1px
+    
+    PhD[PhDStudentAgent]
+    PD[PostdocAgent]
+    PROF[ProfessorAgent]
+    ML[MLEngineerAgent]
+    SW[SWEngineerAgent]
+    REV[ReviewersAgent]
+    
+    PhD --> PhD_LR[Literature Review]:::litReview
+    PhD --> PhD_PL[Plan Contribution]:::planning
+    PhD --> PhD_RI[Results Interpretation]:::interpretation
+    PhD --> PhD_RR[Report Refinement]:::review
+    
+    PD --> PD_PL[Plan Formulation]:::planning
+    PD --> PD_RI[Results Interpretation]:::interpretation
+    
+    PROF --> PROF_RW[Report Oversight]:::report
+    PROF --> PROF_RM[README Generation]:::report
+    
+    ML --> ML_DP[Data Preparation]:::dataPrep
+    ML --> ML_EX[Experiment Setup]:::experiments
+    
+    SW --> SW_DP[Code Implementation]:::dataPrep
+    
+    REV --> REV_RV[Report Evaluation]:::review
+    
+    %% Specialized Solvers
+    MLE[MLESolver] --> MLE_EX[Experiment Execution]:::experiments
+    PS[PaperSolver] --> PS_RW[Report Writing]:::report
+```
