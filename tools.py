@@ -16,6 +16,10 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 import traceback
 import concurrent.futures
+import ssl
+from urllib3.util.retry import Retry
+from requests.adapters import HTTPAdapter
+import requests
 
 
 class HFDataSearch:
@@ -263,28 +267,89 @@ class ArxivSearch:
 
     def retrieve_full_paper_text(self, query):
         pdf_text = str()
-        paper = next(arxiv.Client().results(arxiv.Search(id_list=[query])))
-        # Download the PDF to the PWD with a custom filename.
-        paper.download_pdf(filename="downloaded-paper.pdf")
-        # creating a pdf reader object
-        reader = PdfReader('downloaded-paper.pdf')
-        # Iterate over all the pages
-        for page_number, page in enumerate(reader.pages, start=1):
-            # Extract text from the page
-            try:
-                text = page.extract_text()
-            except Exception as e:
-                os.remove("downloaded-paper.pdf")
-                time.sleep(2.0)
-                return "EXTRACTION FAILED"
+        pdf_filename = "downloaded-paper.pdf"
+        max_retries = 3
+        retry_count = 0
 
-            # Do something with the text (e.g., print it)
-            pdf_text += f"--- Page {page_number} ---"
-            pdf_text += text
-            pdf_text += "\n"
-        os.remove("downloaded-paper.pdf")
-        time.sleep(2.0)
-        return pdf_text
+        # Configure SSL context
+        ssl_context = ssl.create_default_context()
+        ssl_context.minimum_version = ssl.TLSVersion.TLSv1_2
+
+        # Configure retry strategy
+        retry_strategy = Retry(
+            total=3,
+            backoff_factor=1,
+            status_forcelist=[429, 500, 502, 503, 504],
+        )
+
+        while retry_count < max_retries:
+            try:
+                # Create session with retry strategy
+                session = requests.Session()
+                adapter = HTTPAdapter(max_retries=retry_strategy)
+                session.mount("https://", adapter)
+                
+                # Configure arxiv client with custom session
+                client = arxiv.Client(session=session)
+                paper = next(client.results(arxiv.Search(id_list=[query])))
+
+                try:
+                    # Download the PDF with proper error handling
+                    paper.download_pdf(filename=pdf_filename)
+                except Exception as e:
+                    print(f"Failed to download PDF: {e}")
+                    time.sleep(2.0 * (retry_count + 1))
+                    retry_count += 1
+                    continue
+
+                try:
+                    # Read and extract text from PDF
+                    reader = PdfReader(pdf_filename)
+                    for page_number, page in enumerate(reader.pages, start=1):
+                        try:
+                            text = page.extract_text()
+                            pdf_text += f"--- Page {page_number} ---\n"
+                            pdf_text += text
+                            pdf_text += "\n"
+                        except Exception as e:
+                            print(f"Failed to extract text from page {page_number}: {e}")
+                            pdf_text += f"--- Page {page_number} ---\n"
+                            pdf_text += "EXTRACTION FAILED\n"
+                except Exception as e:
+                    print(f"Failed to read PDF file: {e}")
+                    time.sleep(2.0 * (retry_count + 1))
+                    retry_count += 1
+                    continue
+
+                return pdf_text
+
+            except StopIteration:
+                print("No results found")
+                return "NO RESULTS FOUND"
+            except arxiv.HTTPError as e:
+                print(f"HTTP Error: {e}")
+                time.sleep(2.0 * (retry_count + 1))
+                retry_count += 1
+                continue
+            except (requests.exceptions.ConnectionError, ConnectionResetError) as e:
+                print(f"Connection error: {e}")
+                time.sleep(2.0 * (retry_count + 1))
+                retry_count += 1
+                continue
+            except Exception as e:
+                print(f"Unexpected error: {e}")
+                time.sleep(2.0 * (retry_count + 1))
+                retry_count += 1
+                continue
+            finally:
+                # Cleanup
+                if os.path.exists(pdf_filename):
+                    try:
+                        os.remove(pdf_filename)
+                    except Exception as e:
+                        print(f"Failed to delete temporary file {pdf_filename}: {e}")
+
+        return "FAILED AFTER MAX RETRIES"
 
 """
 import multiprocessing
