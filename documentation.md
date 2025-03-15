@@ -5,6 +5,12 @@
 - [📚 Introduction](#introduction)
   - [Purpose and Goals](#purpose-and-goals)
   - [Key Features](#key-features)
+- [👨‍💻 End-User Guide](#end-user-guide)
+  - [⚙️ Installation](#installation)
+  - [🔧 Configuration](#configuration)
+  - [🚀 Running Research Projects](#running-research-projects)
+  - [💡 Tips for Effective Use](#tips-for-effective-use)
+  - [❓ Troubleshooting](#troubleshooting)
 - [🏗️ Developer Documentation](#developer-documentation)
   - [System Architecture](#system-architecture)
   - [Code Structure](#code-structure)
@@ -12,22 +18,12 @@
   - [🧩 Specialized Solvers in Detail](#specialized-solvers-in-detail)
   - [🛠️ External Tools in Detail](#external-tools-in-detail)
   - [🔌 LLM Integration](#llm-integration)
-- [👨‍💻 End-User Guide](#end-user-guide)
-  - [⚙️ Installation](#installation)
-  - [🔧 Configuration](#configuration)
-  - [🚀 Running Research Projects](#running-research-projects)
-  - [🔄 Research Phases: Eventstorming](#research-phases-eventstorming)
-  - [💡 Tips for Effective Use](#tips-for-effective-use)
-  - [❓ Troubleshooting](#troubleshooting)
-- [🔍 Conclusion](#conclusion)
-  - [Key Strengths](#key-strengths)
-  - [Limitations and Considerations](#limitations-and-considerations)
-  - [Future Directions](#future-directions)
-- [📊 System Visualizations](#system-architecture-diagram)
-  - [System Architecture Diagram](#system-architecture-diagram)
-  - [Research Workflow Sequence Diagram](#research-workflow-sequence-diagram)
+- [📊 System Visualizations](#system-visualizations)
   - [Co-Pilot Mode Interaction Flow](#co-pilot-mode-interaction-flow)
-  - [Agent Role and Responsibility Chart](#agent-role-and-responsibility-chart)
+  - [Eventstorming of Research Phases](#eventstorming-of-research-phases)
+- [🔮 Future Directions](#future-directions)
+  - [Limitations and Considerations](#limitations-and-considerations)
+  - [Future Development](#future-development)
 
 ## 📚 Introduction
 
@@ -52,6 +48,218 @@ The primary purpose of Agent Laboratory is to augment human researchers by autom
 - **Human-in-the-loop capability**: Co-pilot mode allows for human guidance and intervention
 - **Checkpointing system**: Progress can be saved and resumed at different stages
 - **Multi-language support**: Can operate in various languages beyond English
+
+## 👨‍💻 End-User Guide
+
+This section provides comprehensive guidance for using Agent Laboratory as an end-user.
+
+### ⚙️ Installation
+
+#### Prerequisites
+
+Before installing Agent Laboratory, ensure you have:
+
+1. Python 3.12 (recommended)
+2. pip (Python package manager)
+3. Git
+4. pdflatex (optional, for PDF compilation)
+5. Valid API keys for LLM providers (OpenAI and/or DeepSeek)
+
+#### Installation Steps
+
+1. **Clone the Repository**:
+   ```bash
+   git clone git@github.com:SamuelSchmidgall/AgentLaboratory.git
+   ```
+
+2. **Set up Virtual Environment**:
+   ```bash
+   python -m venv venv_agent_lab
+   source venv_agent_lab/bin/activate  # On Windows: venv_agent_lab\Scripts\activate
+   ```
+
+3. **Install Dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Install pdflatex (Optional)**:
+   If you want to enable LaTeX compilation to PDF:
+   ```bash
+   sudo apt install pdflatex  # On Ubuntu/Debian
+   # For other platforms, install TeX Live or MiKTeX
+   ```
+   
+   Note: If you cannot install pdflatex, you can still use Agent Laboratory by setting the `--compile-latex` flag to `false`.
+
+### 🔧 Configuration
+
+#### API Keys
+
+Agent Laboratory requires API keys for accessing LLM services. You can provide these in two ways:
+
+1. **Environment Variables**:
+   ```bash
+   export OPENAI_API_KEY="your_openai_api_key"
+   export DEEPSEEK_API_KEY="your_deepseek_api_key"
+   ```
+
+2. **Command-line Arguments**:
+   ```bash
+   python ai_lab_repo.py --api-key "your_openai_api_key" --deepseek-api-key "your_deepseek_api_key"
+   ```
+
+#### Model Selection
+
+You can specify which LLM backend to use:
+
+```bash
+python ai_lab_repo.py --llm-backend "o1-mini" --research-topic "Your research topic"
+```
+
+Available options include:
+- "o1" (OpenAI flagship model)
+- "o1-preview"
+- "o1-mini"
+- "gpt-4o"
+- "deepseek-chat"
+
+#### Other Configuration Options
+
+Additional configuration options can be specified through command-line arguments:
+
+- `--copilot-mode "true"`: Enables human interaction at each phase
+- `--compile-latex "false"`: Disables LaTeX PDF compilation
+- `--language "中文"`: Sets the operating language (default is English)
+- `--num-papers-lit-review "5"`: Sets the number of papers to include in literature review
+- `--mlesolver-max-steps "3"`: Sets the maximum number of optimization steps for MLESolver
+- `--papersolver-max-steps "5"`: Sets the maximum number of optimization steps for PaperSolver
+
+### 🚀 Running Research Projects
+
+#### Basic Usage
+
+To start a research project with Agent Laboratory:
+
+```bash
+python ai_lab_repo.py --api-key "API_KEY_HERE" --llm-backend "o1-mini" --research-topic "YOUR RESEARCH IDEA"
+```
+
+This will initiate the full research workflow, from literature review to report generation.
+
+#### Co-Pilot Mode
+
+To enable human interaction at each phase of the research process:
+
+```bash
+python ai_lab_repo.py --api-key "API_KEY_HERE" --llm-backend "o1-mini" --research-topic "YOUR RESEARCH IDEA" --copilot-mode "true"
+```
+
+In co-pilot mode, the system will pause after each phase and ask for human approval or feedback.
+
+#### Without LaTeX Compilation
+
+If you don't have pdflatex installed:
+
+```bash
+python ai_lab_repo.py --api-key "API_KEY_HERE" --llm-backend "o1-mini" --research-topic "YOUR RESEARCH IDEA" --compile-latex "false"
+```
+
+#### Using Checkpoints
+
+Agent Laboratory automatically saves checkpoints at the end of each phase. To resume from a checkpoint:
+
+```bash
+python ai_lab_repo.py --api-key "API_KEY_HERE" --research-topic "YOUR RESEARCH IDEA" --llm-backend "o1-mini" --load-existing True --load-existing-path "state_saves/LOAD_PATH"
+```
+
+#### Non-English Operation
+
+To run Agent Laboratory in another language:
+
+```bash
+python ai_lab_repo.py --api-key "API_KEY_HERE" --research-topic "YOUR RESEARCH IDEA (in your language)" --llm-backend "o1-mini" --language "中文"
+```
+
+### 💡 Tips for Effective Use
+
+#### Writing Effective Notes
+
+One of the most important ways to guide Agent Laboratory is through detailed notes. These notes can be added to the `task_notes_LLM` structure in `ai_lab_repo.py`:
+
+```python
+task_notes_LLM = [
+    {"phases": ["plan formulation"],
+     "note": "You should come up with a plan for TWO experiments."},
+     
+    {"phases": ["data preparation", "running experiments"],
+     "note": "You are running on a MacBook laptop. You can use 'mps' with PyTorch"},
+     
+    {"phases": ["data preparation", "running experiments"],
+     "note": "Generate figures with very colorful and artistic design."},
+]
+```
+
+Effective notes should include:
+- Compute resource information (GPUs, CPUs, storage limitations)
+- Specific experiments to be performed
+- Style preferences for visualizations
+- API keys or access credentials (if needed)
+- Size constraints or performance considerations
+
+#### Choosing Appropriate Models
+
+The choice of LLM model significantly impacts the quality of research outputs:
+
+- More powerful models (o1, o1-preview) generally produce higher quality results but at higher cost
+- For initial prototyping or exploration, consider using o1-mini or gpt-4o
+- For final results or complex research tasks, consider using more capable models
+
+A balanced approach is to use more efficient models for iterative phases and reserve powerful models for critical phases like plan formulation and report writing.
+
+#### Handling Large Research Projects
+
+For complex research projects:
+
+1. **Break down into sub-topics**: Focus on one aspect at a time
+2. **Increase literature review limits**: Use `--num-papers-lit-review` to include more papers
+3. **Extend solver steps**: Increase `--mlesolver-max-steps` and `--papersolver-max-steps`
+4. **Use checkpoints strategically**: Save after major phases and iterate as needed
+5. **Leverage co-pilot mode**: Provide guidance at critical decision points
+
+### ❓ Troubleshooting
+
+#### Common Issues and Solutions
+
+1. **API Errors** 🔑:
+   - **Issue**: "No API key provided" or authentication errors
+   - **Solution**: Check that your API keys are correctly set and have sufficient credits
+
+2. **LaTeX Compilation Errors** 📄:
+   - **Issue**: "Compilation failed" or missing PDF output
+   - **Solution**: Run with `--compile-latex "false"` or install pdflatex
+
+3. **Memory or Resource Limitations** 💾:
+   - **Issue**: Slow performance or crashes during experimentation
+   - **Solution**: Add notes to limit dataset size or model complexity
+
+4. **Agent Getting Stuck** 🔄:
+   - **Issue**: Agent repeating the same actions or not progressing
+   - **Solution**: Use co-pilot mode to intervene, or restart from the last checkpoint
+
+5. **Low-Quality Results** 📉:
+   - **Issue**: Experiments or reports don't meet expectations
+   - **Solution**: Try using a more capable LLM model or provide more detailed notes
+
+#### Getting Help
+
+If you encounter issues not covered here:
+
+1. Check the project's GitHub repository for updates or known issues
+2. Review the extensive notes in the codebase for hints
+3. Contact the developers at [sschmi46@jhu.edu](mailto:sschmi46@jhu.edu)
+
+Remember that Agent Laboratory is a research tool and results may vary based on the complexity of your research topic and the capabilities of the LLM models used.
 
 ## 🏗️ Developer Documentation
 
@@ -284,139 +492,67 @@ Agent Laboratory allows for granular configuration of LLM usage:
 - **Model Selection**: Command-line interface for specifying the primary LLM backend
 - **Version Compatibility**: Supports different versions of provider APIs
 
-## 👨‍💻 End-User Guide
+## 📊 System Visualizations
 
-This section provides comprehensive guidance for using Agent Laboratory as an end-user.
+### Co-Pilot Mode Interaction Flow
 
-### ⚙️ Installation
+This diagram illustrates how user interactions occur in co-pilot mode:
 
-#### Prerequisites
-
-Before installing Agent Laboratory, ensure you have:
-
-1. Python 3.12 (recommended)
-2. pip (Python package manager)
-3. Git
-4. pdflatex (optional, for PDF compilation)
-5. Valid API keys for LLM providers (OpenAI and/or DeepSeek)
-
-#### Installation Steps
-
-1. **Clone the Repository**:
-   ```bash
-   git clone git@github.com:SamuelSchmidgall/AgentLaboratory.git
-   ```
-
-2. **Set up Virtual Environment**:
-   ```bash
-   python -m venv venv_agent_lab
-   source venv_agent_lab/bin/activate  # On Windows: venv_agent_lab\Scripts\activate
-   ```
-
-3. **Install Dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Install pdflatex (Optional)**:
-   If you want to enable LaTeX compilation to PDF:
-   ```bash
-   sudo apt install pdflatex  # On Ubuntu/Debian
-   # For other platforms, install TeX Live or MiKTeX
-   ```
-   
-   Note: If you cannot install pdflatex, you can still use Agent Laboratory by setting the `--compile-latex` flag to `false`.
-
-### 🔧 Configuration
-
-#### API Keys
-
-Agent Laboratory requires API keys for accessing LLM services. You can provide these in two ways:
-
-1. **Environment Variables**:
-   ```bash
-   export OPENAI_API_KEY="your_openai_api_key"
-   export DEEPSEEK_API_KEY="your_deepseek_api_key"
-   ```
-
-2. **Command-line Arguments**:
-   ```bash
-   python ai_lab_repo.py --api-key "your_openai_api_key" --deepseek-api-key "your_deepseek_api_key"
-   ```
-
-#### Model Selection
-
-You can specify which LLM backend to use:
-
-```bash
-python ai_lab_repo.py --llm-backend "o1-mini" --research-topic "Your research topic"
+```mermaid
+graph TD
+    Start[Start Research Process] --> Phase1[Literature Review Phase]
+    
+    Phase1 --> PhD1[PhDStudentAgent Works]
+    PhD1 --> Output1[Literature Review Output]
+    Output1 --> User1{User Review}
+    User1 -->|Approve| Phase2[Plan Formulation Phase]
+    User1 -->|Feedback| PhD1
+    
+    Phase2 --> Agents2[PostdocAgent & PhDStudentAgent Work]
+    Agents2 --> Output2[Research Plan Output]
+    Output2 --> User2{User Review}
+    User2 -->|Approve| Phase3[Data Preparation Phase]
+    User2 -->|Feedback| Agents2
+    
+    Phase3 --> Agents3[MLEngineer & SWEngineer Work]
+    Agents3 --> Output3[Data Preparation Code]
+    Output3 --> User3{User Review}
+    User3 -->|Approve| Phase4[Experimentation Phase]
+    User3 -->|Feedback| Agents3
+    
+    Phase4 --> MLE[MLESolver Works]
+    MLE --> Output4[Experiment Results]
+    Output4 --> User4{User Review}
+    User4 -->|Approve| Phase5[Results Interpretation Phase]
+    User4 -->|Feedback| MLE
+    
+    Phase5 --> Agents5[PostdocAgent & PhDStudentAgent Work]
+    Agents5 --> Output5[Results Interpretation]
+    Output5 --> User5{User Review}
+    User5 -->|Approve| Phase6[Report Writing Phase]
+    User5 -->|Feedback| Agents5
+    
+    Phase6 --> PS[PaperSolver Works]
+    PS --> Output6[Research Report]
+    Output6 --> User6{User Review}
+    User6 -->|Approve| Phase7[Report Refinement Phase]
+    User6 -->|Feedback| PS
+    
+    Phase7 --> Agents7[ReviewersAgent & PhDStudentAgent Work]
+    Agents7 --> Output7[Final Report]
+    Output7 --> User7{User Review}
+    User7 -->|Approve| Complete[Research Complete]
+    User7 -->|Feedback| PrevPhase[Return to Appropriate Phase]
+    
+    PrevPhase --> Phase1
+    PrevPhase --> Phase2
+    PrevPhase --> Phase3
+    PrevPhase --> Phase4
+    PrevPhase --> Phase5
+    PrevPhase --> Phase6
 ```
 
-Available options include:
-- "o1" (OpenAI flagship model)
-- "o1-preview"
-- "o1-mini"
-- "gpt-4o"
-- "deepseek-chat"
-
-#### Other Configuration Options
-
-Additional configuration options can be specified through command-line arguments:
-
-- `--copilot-mode "true"`: Enables human interaction at each phase
-- `--compile-latex "false"`: Disables LaTeX PDF compilation
-- `--language "中文"`: Sets the operating language (default is English)
-- `--num-papers-lit-review "5"`: Sets the number of papers to include in literature review
-- `--mlesolver-max-steps "3"`: Sets the maximum number of optimization steps for MLESolver
-- `--papersolver-max-steps "5"`: Sets the maximum number of optimization steps for PaperSolver
-
-### 🚀 Running Research Projects
-
-#### Basic Usage
-
-To start a research project with Agent Laboratory:
-
-```bash
-python ai_lab_repo.py --api-key "API_KEY_HERE" --llm-backend "o1-mini" --research-topic "YOUR RESEARCH IDEA"
-```
-
-This will initiate the full research workflow, from literature review to report generation.
-
-#### Co-Pilot Mode
-
-To enable human interaction at each phase of the research process:
-
-```bash
-python ai_lab_repo.py --api-key "API_KEY_HERE" --llm-backend "o1-mini" --research-topic "YOUR RESEARCH IDEA" --copilot-mode "true"
-```
-
-In co-pilot mode, the system will pause after each phase and ask for human approval or feedback.
-
-#### Without LaTeX Compilation
-
-If you don't have pdflatex installed:
-
-```bash
-python ai_lab_repo.py --api-key "API_KEY_HERE" --llm-backend "o1-mini" --research-topic "YOUR RESEARCH IDEA" --compile-latex "false"
-```
-
-#### Using Checkpoints
-
-Agent Laboratory automatically saves checkpoints at the end of each phase. To resume from a checkpoint:
-
-```bash
-python ai_lab_repo.py --api-key "API_KEY_HERE" --research-topic "YOUR RESEARCH IDEA" --llm-backend "o1-mini" --load-existing True --load-existing-path "state_saves/LOAD_PATH"
-```
-
-#### Non-English Operation
-
-To run Agent Laboratory in another language:
-
-```bash
-python ai_lab_repo.py --api-key "API_KEY_HERE" --research-topic "YOUR RESEARCH IDEA (in your language)" --llm-backend "o1-mini" --language "中文"
-```
-
-### 🔄 Research Phases: Eventstorming
+### Eventstorming of Research Phases
 
 This section provides a detailed walkthrough of the entire research workflow in Agent Laboratory, presented in an Eventstorming format that traces the process from initial user input to final output.
 
@@ -767,113 +903,11 @@ ReportRefinementPhaseCompleted
 **Transition**:
 Upon completion, the entire research workflow is finalized, and all artifacts are available in the `research_dir` directory.
 
-### 💡 Tips for Effective Use
-
-#### Writing Effective Notes
-
-One of the most important ways to guide Agent Laboratory is through detailed notes. These notes can be added to the `task_notes_LLM` structure in `ai_lab_repo.py`:
-
-```python
-task_notes_LLM = [
-    {"phases": ["plan formulation"],
-     "note": "You should come up with a plan for TWO experiments."},
-     
-    {"phases": ["data preparation", "running experiments"],
-     "note": "You are running on a MacBook laptop. You can use 'mps' with PyTorch"},
-     
-    {"phases": ["data preparation", "running experiments"],
-     "note": "Generate figures with very colorful and artistic design."},
-]
-```
-
-Effective notes should include:
-- Compute resource information (GPUs, CPUs, storage limitations)
-- Specific experiments to be performed
-- Style preferences for visualizations
-- API keys or access credentials (if needed)
-- Size constraints or performance considerations
-
-#### Choosing Appropriate Models
-
-The choice of LLM model significantly impacts the quality of research outputs:
-
-- More powerful models (o1, o1-preview) generally produce higher quality results but at higher cost
-- For initial prototyping or exploration, consider using o1-mini or gpt-4o
-- For final results or complex research tasks, consider using more capable models
-
-A balanced approach is to use more efficient models for iterative phases and reserve powerful models for critical phases like plan formulation and report writing.
-
-#### Handling Large Research Projects
-
-For complex research projects:
-
-1. **Break down into sub-topics**: Focus on one aspect at a time
-2. **Increase literature review limits**: Use `--num-papers-lit-review` to include more papers
-3. **Extend solver steps**: Increase `--mlesolver-max-steps` and `--papersolver-max-steps`
-4. **Use checkpoints strategically**: Save after major phases and iterate as needed
-5. **Leverage co-pilot mode**: Provide guidance at critical decision points
-
-### ❓ Troubleshooting
-
-#### Common Issues and Solutions
-
-1. **API Errors** 🔑:
-   - **Issue**: "No API key provided" or authentication errors
-   - **Solution**: Check that your API keys are correctly set and have sufficient credits
-
-2. **LaTeX Compilation Errors** 📄:
-   - **Issue**: "Compilation failed" or missing PDF output
-   - **Solution**: Run with `--compile-latex "false"` or install pdflatex
-
-3. **Memory or Resource Limitations** 💾:
-   - **Issue**: Slow performance or crashes during experimentation
-   - **Solution**: Add notes to limit dataset size or model complexity
-
-4. **Agent Getting Stuck** 🔄:
-   - **Issue**: Agent repeating the same actions or not progressing
-   - **Solution**: Use co-pilot mode to intervene, or restart from the last checkpoint
-
-5. **Low-Quality Results** 📉:
-   - **Issue**: Experiments or reports don't meet expectations
-   - **Solution**: Try using a more capable LLM model or provide more detailed notes
-
-#### Getting Help
-
-If you encounter issues not covered here:
-
-1. Check the project's GitHub repository for updates or known issues
-2. Review the extensive notes in the codebase for hints
-3. Contact the developers at [sschmi46@jhu.edu](mailto:sschmi46@jhu.edu)
-
-Remember that Agent Laboratory is a research tool and results may vary based on the complexity of your research topic and the capabilities of the LLM models used.
-
-## 🔍 Conclusion
-
-Agent Laboratory represents a significant advancement in the application of Large Language Models to scientific research. By creating a collaborative multi-agent system that mimics the structure of a research team, it provides a powerful tool for accelerating and enhancing the research process.
-
-### Key Strengths
-
-- **End-to-End Automation** 🔄: Agent Laboratory covers the entire research workflow, from literature review to report generation, providing a comprehensive solution for research automation.
-
-- **Multi-Agent Architecture** 🤖: The use of specialized agents with distinct roles creates a collaborative system that leverages the strengths of different perspectives and expertise areas.
-
-- **Iterative Improvement** 📈: The system's use of feedback loops and checkpointing allows for continuous improvement and refinement of research artifacts.
-
-- **Human Collaboration** 👥: The co-pilot mode enables effective human-AI collaboration, allowing researchers to guide the process while automating time-consuming tasks.
-
-- **Adaptability** 🔧: The system can be applied to a wide range of research domains and methodologies, making it a versatile tool for different research contexts.
-
-### Limitations and Considerations
-
-- **LLM Capabilities** 🧠: The quality of research outputs is fundamentally dependent on the capabilities of the underlying LLM models.
-
-- **Resource Requirements** 💻: More complex research projects may require significant computational resources and LLM API costs.
-
-- **Domain Expertise** 🎓: While Agent Laboratory can assist with research, it cannot replace the depth of domain expertise that human researchers bring to their fields.
+## 🔮 Future Directions
 
 - **Ethical Considerations** 🔬: Automated research tools raise important questions about authorship, attribution, and the responsible use of AI in scientific discovery.
 
-### Future Directions
+### Future Development
 
 Agent Laboratory represents an early step in the evolution of AI-assisted research. Future developments may include:
 
@@ -886,246 +920,3 @@ Agent Laboratory represents an early step in the evolution of AI-assisted resear
 By combining the creativity and guidance of human researchers with the efficiency and scalability of AI agents, Agent Laboratory points toward a future where AI becomes an indispensable partner in scientific discovery, helping researchers to explore more ideas, conduct more thorough analyses, and communicate their findings more effectively.
 
 As the system continues to evolve, it has the potential to democratize research capabilities, making sophisticated research methodologies accessible to a wider range of practitioners and potentially accelerating the pace of scientific advancement across multiple disciplines.
-
----
-
-*This documentation was created based on a comprehensive analysis of the AgentLaboratory codebase as of March 2024. For the most up-to-date information, please refer to the project's GitHub repository.*
-
-## System Architecture Diagram
-
-The following diagram illustrates the overall architecture of the Agent Laboratory system:
-
-```mermaid
-graph TD
-    User[User Input] --> LW[LaboratoryWorkflow]
-    
-    subgraph "Core Orchestration"
-        LW --> Phase1[Literature Review]
-        Phase1 --> Phase2[Plan Formulation]
-        Phase2 --> Phase3[Data Preparation]
-        Phase3 --> Phase4[Running Experiments]
-        Phase4 --> Phase5[Results Interpretation]
-        Phase5 --> Phase6[Report Writing]
-        Phase6 --> Phase7[Report Refinement]
-    end
-    
-    subgraph "Agent Layer"
-        Phase1 --> PhDStudent[PhDStudentAgent]
-        Phase2 --> Postdoc[PostdocAgent]
-        Phase2 --> PhDStudent
-        Phase3 --> MLEngineer[MLEngineerAgent]
-        Phase3 --> SWEngineer[SWEngineerAgent]
-        Phase4 --> MLE[MLESolver]
-        Phase5 --> Postdoc
-        Phase5 --> PhDStudent
-        Phase6 --> Paper[PaperSolver]
-        Phase6 --> Professor[ProfessorAgent]
-        Phase7 --> Reviewers[ReviewersAgent]
-        Phase7 --> PhDStudent
-    end
-    
-    subgraph "External Tools"
-        PhDStudent --> ArxivSearch[ArxivSearch]
-        MLEngineer --> HFData[HFDataSearch]
-        MLE --> CodeExec[Code Execution]
-    end
-    
-    subgraph "LLM Layer"
-        PhDStudent --> LLM[LLM API]
-        Postdoc --> LLM
-        Professor --> LLM
-        MLEngineer --> LLM
-        SWEngineer --> LLM
-        MLE --> LLM
-        Paper --> LLM
-        Reviewers --> LLM
-    end
-    
-    subgraph "Output Artifacts"
-        LW --> LitReview[Literature Review]
-        LW --> ResearchPlan[Research Plan]
-        LW --> DataCode[Data Preparation Code]
-        LW --> ExpCode[Experiment Code]
-        LW --> Results[Results & Visualizations]
-        LW --> Report[LaTeX Report]
-        LW --> PDF[PDF Document]
-        LW --> ReadMe[README.md]
-    end
-```
-
-## Research Workflow Sequence Diagram
-
-This diagram shows the sequential flow of the research process and the interactions between different agents:
-
-```mermaid
-sequenceDiagram
-    participant User
-    participant LW as LaboratoryWorkflow
-    participant PhD as PhDStudentAgent
-    participant PD as PostdocAgent
-    participant ML as MLEngineerAgent
-    participant SW as SWEngineerAgent
-    participant MLE as MLESolver
-    participant PS as PaperSolver
-    participant PROF as ProfessorAgent
-    participant REV as ReviewersAgent
-    
-    User->>LW: Research Topic
-    
-    %% Literature Review Phase
-    LW->>PhD: Start Literature Review
-    PhD->>PhD: Generate Search Queries
-    PhD->>PhD: Execute ArxivSearch
-    PhD->>PhD: Analyze Papers
-    PhD->>PhD: Compile Literature Review
-    PhD->>LW: Literature Review Complete
-    
-    %% Plan Formulation Phase
-    LW->>PD: Start Plan Formulation
-    LW->>PhD: Contribute to Plan
-    PD->>PhD: Guide Plan Development
-    PhD->>PD: Provide Literature Insights
-    PD->>LW: Research Plan Complete
-    
-    %% Data Preparation Phase
-    LW->>ML: Start Data Preparation
-    LW->>SW: Support Data Preparation
-    ML->>ML: Find Datasets
-    ML->>SW: Draft Data Processing Code
-    SW->>ML: Review and Refine Code
-    ML->>LW: Data Preparation Complete
-    
-    %% Running Experiments Phase
-    LW->>MLE: Start Experimentation
-    MLE->>MLE: Generate Initial Code
-    MLE->>MLE: Execute Code
-    MLE->>MLE: Analyze Results
-    MLE->>MLE: Improve Code
-    MLE->>MLE: Generate Visualizations
-    MLE->>LW: Experiments Complete
-    
-    %% Results Interpretation Phase
-    LW->>PD: Start Results Interpretation
-    LW->>PhD: Support Interpretation
-    PD->>PhD: Guide Analysis
-    PhD->>PD: Contribute Insights
-    PD->>LW: Interpretation Complete
-    
-    %% Report Writing Phase
-    LW->>PS: Start Report Writing
-    PS->>PS: Generate Paper Scaffold
-    PS->>PS: Write Paper Sections
-    PS->>PS: Incorporate Figures
-    LW->>PROF: Generate README
-    PS->>LW: Report Complete
-    
-    %% Report Refinement Phase
-    LW->>REV: Start Report Refinement
-    REV->>REV: Generate Reviews
-    LW->>PhD: Address Reviews
-    PhD->>LW: Refinements Complete
-    
-    LW->>User: Final Research Artifacts
-```
-
-## Co-Pilot Mode Interaction Flow
-
-This diagram illustrates how user interactions occur in co-pilot mode:
-
-```mermaid
-graph TD
-    Start[Start Research Process] --> Phase1[Literature Review Phase]
-    
-    Phase1 --> PhD1[PhDStudentAgent Works]
-    PhD1 --> Output1[Literature Review Output]
-    Output1 --> User1{User Review}
-    User1 -->|Approve| Phase2[Plan Formulation Phase]
-    User1 -->|Feedback| PhD1
-    
-    Phase2 --> Agents2[PostdocAgent & PhDStudentAgent Work]
-    Agents2 --> Output2[Research Plan Output]
-    Output2 --> User2{User Review}
-    User2 -->|Approve| Phase3[Data Preparation Phase]
-    User2 -->|Feedback| Agents2
-    
-    Phase3 --> Agents3[MLEngineer & SWEngineer Work]
-    Agents3 --> Output3[Data Preparation Code]
-    Output3 --> User3{User Review}
-    User3 -->|Approve| Phase4[Experimentation Phase]
-    User3 -->|Feedback| Agents3
-    
-    Phase4 --> MLE[MLESolver Works]
-    MLE --> Output4[Experiment Results]
-    Output4 --> User4{User Review}
-    User4 -->|Approve| Phase5[Results Interpretation Phase]
-    User4 -->|Feedback| MLE
-    
-    Phase5 --> Agents5[PostdocAgent & PhDStudentAgent Work]
-    Agents5 --> Output5[Results Interpretation]
-    Output5 --> User5{User Review}
-    User5 -->|Approve| Phase6[Report Writing Phase]
-    User5 -->|Feedback| Agents5
-    
-    Phase6 --> PS[PaperSolver Works]
-    PS --> Output6[Research Report]
-    Output6 --> User6{User Review}
-    User6 -->|Approve| Phase7[Report Refinement Phase]
-    User6 -->|Feedback| PS
-    
-    Phase7 --> Agents7[ReviewersAgent & PhDStudentAgent Work]
-    Agents7 --> Output7[Final Report]
-    Output7 --> User7{User Review}
-    User7 -->|Approve| Complete[Research Complete]
-    User7 -->|Feedback| PrevPhase[Return to Appropriate Phase]
-    
-    PrevPhase --> Phase1
-    PrevPhase --> Phase2
-    PrevPhase --> Phase3
-    PrevPhase --> Phase4
-    PrevPhase --> Phase5
-    PrevPhase --> Phase6
-```
-
-## Agent Role and Responsibility Chart
-
-This diagram maps the agents to their primary responsibilities across research phases:
-
-```mermaid
-graph TD
-    classDef litReview fill:#f9d5e5,stroke:#333,stroke-width:1px
-    classDef planning fill:#e3eaa7,stroke:#333,stroke-width:1px
-    classDef dataPrep fill:#b5ead7,stroke:#333,stroke-width:1px
-    classDef experiments fill:#c7ceea,stroke:#333,stroke-width:1px
-    classDef interpretation fill:#ffdac1,stroke:#333,stroke-width:1px
-    classDef report fill:#ff9aa2,stroke:#333,stroke-width:1px
-    classDef review fill:#d0d1ff,stroke:#333,stroke-width:1px
-    
-    PhD[PhDStudentAgent]
-    PD[PostdocAgent]
-    PROF[ProfessorAgent]
-    ML[MLEngineerAgent]
-    SW[SWEngineerAgent]
-    REV[ReviewersAgent]
-    
-    PhD --> PhD_LR[Literature Review]:::litReview
-    PhD --> PhD_PL[Plan Contribution]:::planning
-    PhD --> PhD_RI[Results Interpretation]:::interpretation
-    PhD --> PhD_RR[Report Refinement]:::review
-    
-    PD --> PD_PL[Plan Formulation]:::planning
-    PD --> PD_RI[Results Interpretation]:::interpretation
-    
-    PROF --> PROF_RW[Report Oversight]:::report
-    PROF --> PROF_RM[README Generation]:::report
-    
-    ML --> ML_DP[Data Preparation]:::dataPrep
-    ML --> ML_EX[Experiment Setup]:::experiments
-    
-    SW --> SW_DP[Code Implementation]:::dataPrep
-    
-    REV --> REV_RV[Report Evaluation]:::review
-    
-    %% Specialized Solvers
-    MLE[MLESolver] --> MLE_EX[Experiment Execution]:::experiments
-    PS[PaperSolver] --> PS_RW[Report Writing]:::report
-```
