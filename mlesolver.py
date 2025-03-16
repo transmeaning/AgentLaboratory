@@ -364,7 +364,7 @@ class MLESolver:
                                 code_err = f"Return from executing code: {cmd_return[2]}"
                                 if cmd_return[0]:  # if success
                                     code_lines = copy(cmd_return[1])
-                                    score, cmd_str, is_valid = get_score(self.plan, "\n".join(code_lines), cmd_return[2], openai_api_key=self.openai_api_key, REWARD_MODEL_LLM=self.llm_str)
+                                    score, cmd_str, is_valid = get_score(self.plan, "\n".join(code_lines), cmd_return[2], REWARD_MODEL_LLM=self.llm_str, openai_api_key=self.openai_api_key)
                                     if is_valid:
                                         failed = False
                                         break
@@ -391,7 +391,7 @@ class MLESolver:
                             code_err = f"Return from executing code: {args[1]}"
                             if success:
                                 code_lines = copy(args[0])
-                                score, cmd_str, is_valid = get_score(self.plan, "\n".join(code_lines), args[1], openai_api_key=self.openai_api_key, REWARD_MODEL_LLM=self.llm_str)
+                                score, cmd_str, is_valid = get_score(self.plan, "\n".join(code_lines), args[1], REWARD_MODEL_LLM=self.llm_str, openai_api_key=self.openai_api_key)
                                 if is_valid:
                                     failed = False
                                     break
@@ -483,8 +483,8 @@ class MLESolver:
                 reflect_prompt = f"This is your code: {code_str}\n\nYour code returned the following error {code_return}. Please provide a detailed reflection on why this error was returned, which lines in the code caused this error, and exactly (line by line) how you hope to fix this in the next update. This step is mostly meant to reflect in order to help your future self fix the error better. Do not provide entirely new code but provide suggestions on how to fix the bug using LINE EDITS."
             elif os.path.exists("submission.csv"):
                 self.prev_working_code = copy(self.code_lines)
-                grade_return = get_score(self.plan, "\n".join(self.prev_working_code), code_return, openai_api_key=self.openai_api_key)[0]
-                print(f"@@@@ SUBMISSION: model score {grade_return}", REWARD_MODEL_LLM=self.llm_str)
+                grade_return = get_score(self.plan, "\n".join(self.prev_working_code), code_return, REWARD_MODEL_LLM=self.llm_str, openai_api_key=self.openai_api_key)[0]
+                print(f"@@@@ SUBMISSION: model score {grade_return}")
                 f"Your code was properly submitted and you have just received a grade for your model.\nYour score was {grade_return}.\n\n"
                 reflect_prompt = f"This is your code: {code_str}\n\nYour code successfully returned a submission csv. Consider further improving your technique through advanced learning techniques, data augmentation, or hyperparamter tuning to increase the score. Please provide a detailed reflection on how to improve your performance, which lines in the code could be improved upon, and exactly (line by line) how you hope to improve this in the next update. This step is mostly meant to reflect in order to help your future self."
 
@@ -526,8 +526,9 @@ class MLESolver:
         phase_str = (
             "You are an ML engineer and you will be writing the code for a research project.\n"
             "Your goal is to produce code that obtains final results for a set of research experiments. You should aim for simple code to collect all results, not complex code. You should integrate the provided literature review and the plan to make sure you are implementing everything outlined in the plan. The dataset code will be added to the beginning of your code always, so this does not need to be rewritten. Make sure you do not write functions, only loose code.\n"
-            "I would recommend writing smaller code so you do not run out of time but make sure to work on all points in the plan in the same code. You code should run every experiment outlined in the plan for a single code.\n",
-            "You cannot pip install new libraries, but many machine learning libraries already work. If you wish to use a language model in your code, please use the following:\nAnything you decide to print inside your code will be provided to you as input, and you will be able to see that part of the code. Using print statements is useful for figuring out what is wrong and understanding your code better."
+            "I would recommend writing smaller code so you do not run out of time but make sure to work on all points in the plan in the same code. You code should run every experiment outlined in the plan for a single code.\n"
+            "You cannot pip install new libraries, but many machine learning libraries already work. If you wish to use a language model in your code, please use the following:\n"
+            "Anything you decide to print inside your code will be provided to you as input, and you will be able to see that part of the code. Using print statements is useful for figuring out what is wrong and understanding your code better."
         )
         return phase_str
 

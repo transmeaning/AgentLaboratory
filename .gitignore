@@ -1,5 +1,14 @@
+# Python
 venv*
+__pycache__/*
+*.pyc
+
+# IDE and Editor files
 .idea*
+.cursor/
+.vscode/
+
+# Project-specific
 tst*
 state*
 junk/*
@@ -9,8 +18,15 @@ papers*
 hf*
 junk/data/*
 research_dir/*
-.DS_Store
 state_saves/*
-__pycache__/*
 Figure*.png
 testrun.py
+
+# Sensitive files
+.env
+.env.*
+logs/
+*.log
+
+# OS-specific
+.DS_Store
