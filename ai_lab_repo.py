@@ -6,6 +6,7 @@ from torch.backends.mkl import verbose
 
 import argparse
 import pickle
+import logging
 
 DEFAULT_LLM_BACKBONE = "o1-mini"
 
@@ -442,40 +443,70 @@ class LaboratoryWorkflow:
 
     def literature_review(self):
         """
-        Perform literature review phase
+        Conduct a literature review on the research topic.
+        
         @return: (bool) whether to repeat the phase
         """
         arx_eng = ArxivSearch()
         max_tries = self.max_steps * 5 # lit review often requires extra steps
+        
+        print("\n=== Starting Literature Review Phase ===")
+        logging.info("Starting Literature Review Phase")
+        
         # get initial response from PhD agent
         resp = self.phd.inference(self.research_topic, "literature review", step=0, temp=0.8)
         if self.verbose: print(resp, "\n~~~~~~~~~~~")
+        
         # iterate until max num tries to complete task is exhausted
         for _i in range(max_tries):
             feedback = str()
 
             # grab summary of papers from arxiv
             if "```SUMMARY" in resp:
+                print("\n>>> SUMMARY command detected <<<")
+                logging.info("SUMMARY command detected")
+                
                 query = extract_prompt(resp, "SUMMARY")
+                print(f"Search query: {query}")
+                logging.info(f"Search query: {query}")
+                
                 papers = arx_eng.find_papers_by_str(query, N=self.arxiv_num_summaries)
                 feedback = f"You requested arXiv papers related to the query {query}, here was the response\n{papers}"
 
             # grab full text from arxiv ID
             elif "```FULL_TEXT" in resp:
+                print("\n>>> FULL_TEXT command detected <<<")
+                logging.info("FULL_TEXT command detected")
+                
                 query = extract_prompt(resp, "FULL_TEXT")
+                print(f"Paper ID: {query}")
+                logging.info(f"Paper ID: {query}")
+                
                 # expiration timer so that paper does not remain in context too long
                 arxiv_paper = f"```EXPIRATION {self.arxiv_paper_exp_time}\n" + arx_eng.retrieve_full_paper_text(query) + "```"
                 feedback = arxiv_paper
 
             # if add paper, extract and add to lit review, provide feedback
             elif "```ADD_PAPER" in resp:
+                print("\n>>> ADD_PAPER command detected <<<")
+                logging.info("ADD_PAPER command detected")
+                
                 query = extract_prompt(resp, "ADD_PAPER")
+                lines = query.strip().split("\n")
+                if len(lines) >= 2:
+                    paper_id = lines[0]
+                    print(f"Adding paper: {paper_id}")
+                    logging.info(f"Adding paper: {paper_id}")
+                
                 feedback, text = self.phd.add_review(query, arx_eng)
                 if len(self.reference_papers) < self.num_ref_papers:
                     self.reference_papers.append(text)
 
             # completion condition
             if len(self.phd.lit_review) >= self.num_papers_lit_review:
+                print("\n>>> Literature review complete <<<")
+                logging.info("Literature review complete")
+                
                 # generate formal review
                 lit_review_sum = self.phd.format_review()
                 # if human in loop -> check if human is happy with the produced review
@@ -492,9 +523,15 @@ class LaboratoryWorkflow:
                 # reset agent state
                 self.reset_agents()
                 self.statistics_per_phase["literature review"]["steps"] = _i
+                
+                print("\n=== Literature Review Phase Complete ===")
+                logging.info("Literature Review Phase Complete")
+                
                 return False
+                
             resp = self.phd.inference(self.research_topic, "literature review", feedback=feedback, step=_i + 1, temp=0.8)
             if self.verbose: print(resp, "\n~~~~~~~~~~~")
+            
         raise Exception("Max tries during phase: Literature Review")
 
     def human_in_loop(self, phase, phase_prod):

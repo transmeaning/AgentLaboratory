@@ -133,16 +133,16 @@ def query_model(
             update_token_tracking(model, response)
             
             # Print cost estimate if requested
-            if print_cost:
-                print(f"Current experiment cost = ${curr_cost_est()}, ** Approximate values, may not reflect true cost")
+                if print_cost:
+                    print(f"Current experiment cost = ${curr_cost_est()}, ** Approximate values, may not reflect true cost")
             
             # Return the response content
             return response.content
         except Exception as e:
             logger.error(f"Inference attempt {attempt+1}/{tries} failed: {e}")
             if attempt < tries - 1:
-                time.sleep(timeout)
-                continue
+            time.sleep(timeout)
+            continue
             else:
                 raise Exception(f"Max retries: timeout after {tries} attempts")
 
