@@ -16,6 +16,9 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 import traceback
 import concurrent.futures
+import logging
+import tempfile
+from PyPDF2 import PdfReader
 
 
 class HFDataSearch:
@@ -199,92 +202,109 @@ class SemanticScholarSearch:
 
 class ArxivSearch:
     def __init__(self):
-        # Construct the default API client.
-        self.sch_engine = arxiv.Client()
+        self.client = arxiv.Client()
+        print("ArXiv search initialized")
+        logging.info("ArXiv search initialized")
+
+    def find_papers_by_str(self, search_str, N=5):
+        """
+        Find papers on ArXiv by search string.
         
-    def _process_query(self, query: str) -> str:
-        """Process query string to fit within MAX_QUERY_LENGTH while preserving as much information as possible"""
-        MAX_QUERY_LENGTH = 300
-        
-        if len(query) <= MAX_QUERY_LENGTH:
-            return query
-        
-        # Split into words
-        words = query.split()
-        processed_query = []
-        current_length = 0
-        
-        # Add words while staying under the limit
-        # Account for spaces between words
-        for word in words:
-            # +1 for the space that will be added between words
-            if current_length + len(word) + 1 <= MAX_QUERY_LENGTH:
-                processed_query.append(word)
-                current_length += len(word) + 1
-            else:
-                break
+        Args:
+            search_str: The search string
+            N: Maximum number of papers to return
             
-        return ' '.join(processed_query)
-    
-    def find_papers_by_str(self, query, N=20):
-        processed_query = self._process_query(query)
-        max_retries = 3
-        retry_count = 0
+        Returns:
+            List[Dict]: A list of paper summaries
+        """
+        print(f"Searching ArXiv for: {search_str}")
+        logging.info(f"Searching ArXiv for: {search_str}")
         
-        while retry_count < max_retries:
-            try:
-                search = arxiv.Search(
-                    query="abs:" + processed_query,
-                    max_results=N,
-                    sort_by=arxiv.SortCriterion.Relevance)
+        search = arxiv.Search(
+            query=search_str,
+            max_results=N,
+            sort_by=arxiv.SortCriterion.Relevance
+        )
+        
+        results = []
+        for result in self.client.results(search):
+            paper_summary = {
+                "title": result.title,
+                "authors": [author.name for author in result.authors],
+                "summary": result.summary,
+                "published": result.published.strftime("%Y-%m-%d"),
+                "pdf_url": result.pdf_url,
+                "arxiv_id": result.entry_id.split("/")[-1]
+            }
+            results.append(paper_summary)
+            print(f"Found paper: {result.title} (ID: {paper_summary['arxiv_id']})")
+            logging.info(f"Found paper: {result.title} (ID: {paper_summary['arxiv_id']})")
+        
+        print(f"Found {len(results)} papers on ArXiv")
+        logging.info(f"Found {len(results)} papers on ArXiv")
+        return results
 
-                paper_sums = list()
-                # `results` is a generator; you can iterate over its elements one by one...
-                for r in self.sch_engine.results(search):
-                    paperid = r.pdf_url.split("/")[-1]
-                    pubdate = str(r.published).split(" ")[0]
-                    paper_sum = f"Title: {r.title}\n"
-                    paper_sum += f"Summary: {r.summary}\n"
-                    paper_sum += f"Publication Date: {pubdate}\n"
-                    paper_sum += f"Categories: {' '.join(r.categories)}\n"
-                    paper_sum += f"arXiv paper ID: {paperid}\n"
-                    paper_sums.append(paper_sum)
-                time.sleep(2.0)
-                return "\n".join(paper_sums)
+    def retrieve_full_paper_text(self, arxiv_id):
+        """
+        Retrieve the full text of a paper from ArXiv.
+        
+        Args:
+            arxiv_id: The ArXiv ID of the paper
+            
+        Returns:
+            str: The full text of the paper
+        """
+        print(f"Retrieving full text for paper with ID: {arxiv_id}")
+        logging.info(f"Retrieving full text for paper with ID: {arxiv_id}")
+        
+        search = arxiv.Search(
+            id_list=[arxiv_id],
+            max_results=1
+        )
+        
+        try:
+            result = next(self.client.results(search))
+            
+            # Create a temporary directory
+            with tempfile.TemporaryDirectory() as temp_dir:
+                # Download the PDF
+                pdf_path = os.path.join(temp_dir, f"{arxiv_id}.pdf")
+                result.download_pdf(filename=pdf_path)
                 
-            except Exception as e:
-                retry_count += 1
-                if retry_count < max_retries:
-                    # 递增延时
-                    time.sleep(2 * retry_count)
-                    continue
+                # Extract text from the PDF
+                text = extract_text_from_pdf(pdf_path)
                 
-        return None
+                print(f"Successfully retrieved full text for paper with ID: {arxiv_id} ({len(text)} characters)")
+                logging.info(f"Successfully retrieved full text for paper with ID: {arxiv_id} ({len(text)} characters)")
+                return text
+        except Exception as e:
+            print(f"Error retrieving full text for paper with ID: {arxiv_id}: {e}")
+            logging.error(f"Error retrieving full text for paper with ID: {arxiv_id}: {e}")
+            return f"Error retrieving paper: {e}"
 
-    def retrieve_full_paper_text(self, query):
-        pdf_text = str()
-        paper = next(arxiv.Client().results(arxiv.Search(id_list=[query])))
-        # Download the PDF to the PWD with a custom filename.
-        paper.download_pdf(filename="downloaded-paper.pdf")
-        # creating a pdf reader object
-        reader = PdfReader('downloaded-paper.pdf')
-        # Iterate over all the pages
-        for page_number, page in enumerate(reader.pages, start=1):
-            # Extract text from the page
-            try:
-                text = page.extract_text()
-            except Exception as e:
-                os.remove("downloaded-paper.pdf")
-                time.sleep(2.0)
-                return "EXTRACTION FAILED"
-
-            # Do something with the text (e.g., print it)
-            pdf_text += f"--- Page {page_number} ---"
-            pdf_text += text
-            pdf_text += "\n"
-        os.remove("downloaded-paper.pdf")
-        time.sleep(2.0)
-        return pdf_text
+def extract_text_from_pdf(pdf_path):
+    """
+    Extract text from a PDF file.
+    
+    Args:
+        pdf_path: Path to the PDF file
+        
+    Returns:
+        str: The extracted text
+    """
+    try:
+        reader = PdfReader(pdf_path)
+        text = ""
+        
+        for page_num, page in enumerate(reader.pages, 1):
+            page_text = page.extract_text()
+            if page_text:
+                text += f"--- Page {page_num} ---\n{page_text}\n\n"
+        
+        return text
+    except Exception as e:
+        logging.error(f"Error extracting text from PDF: {e}")
+        return f"Error extracting text from PDF: {e}"
 
 """
 import multiprocessing

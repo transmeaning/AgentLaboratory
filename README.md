@@ -33,10 +33,71 @@
 
 ### 👾 Currently supported models
 
-* **OpenAI**: o1, o1-preview, o1-mini, gpt-4o
-* **DeepSeek**: deepseek-chat (deepseek-v3)
+* **OpenAI**: o1, o1-preview, o1-mini, gpt-4o, gpt-4o-mini
+* **Anthropic**: claude-3-5-sonnet, claude-3-opus, claude-3-sonnet, claude-3-haiku
+* **Google**: gemini-pro, gemini-ultra, gemini-1.5-pro, gemini-1.5-flash, gemini-2.0-flash
+* **DeepSeek**: deepseek-chat, deepseek-coder
+* **Ollama**: Any model available in your local Ollama instance (e.g., llama3, mistral, phi3, etc.)
 
-To select a specific llm set the flag `--llm-backend="llm_model"` for example `--llm-backend="gpt-4o"` or `--llm-backend="deepseek-chat"`. Please feel free to add a PR supporting new models according to your need!
+To select a specific LLM, set the flag `--llm-backend="llm_model"` for example `--llm-backend="gpt-4o"` or `--llm-backend="llama3"`. 
+
+You can also specify a provider explicitly with `--llm-provider="provider_name"` if you want to use a specific provider for a model that might be available from multiple sources.
+
+### 🔧 LLM Provider Configuration
+
+Agent Laboratory now supports multiple LLM providers through a unified interface. This allows you to use various models from different providers, including local models through Ollama.
+
+#### Setting Up Providers
+
+1. **Create a `.env` file**: Copy the `.env.example` file to `.env` and fill in your API keys:
+```bash
+cp .env.example .env
+```
+
+2. **Configure API Keys**: Edit the `.env` file to add your API keys for the providers you want to use:
+```
+OPENAI_API_KEY=your_openai_api_key_here
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
+DEEPSEEK_API_KEY=your_deepseek_api_key_here
+```
+
+3. **Ollama Configuration**: If you want to use local models through Ollama, make sure Ollama is installed and running. You can configure the Ollama host in the `.env` file:
+```
+OLLAMA_HOST=http://localhost:11434
+OLLAMA_MAX_TOKENS=2048
+```
+
+#### Using Ollama with Agent Laboratory
+
+[Ollama](https://ollama.ai/) allows you to run various open-source LLMs locally on your machine. To use Ollama with Agent Laboratory:
+
+1. **Install Ollama**: Follow the installation instructions at [ollama.ai](https://ollama.ai/).
+
+2. **Pull Models**: Pull the models you want to use:
+```bash
+ollama pull llama3
+ollama pull mistral
+ollama pull phi3
+```
+
+3. **Run Agent Laboratory with Ollama**: Specify an Ollama model with the `--llm-backend` flag:
+```bash
+python ai_lab_repo.py --llm-backend="llama3" --research-topic="Your research topic"
+```
+
+4. **Test Ollama Integration**: You can test if Ollama is working correctly with:
+```bash
+python test_llm_providers.py --provider="ollama" --model="llama3"
+```
+
+#### Available Providers and Models
+
+You can list all available providers and models with:
+```bash
+python test_llm_providers.py
+```
+
+This will show you which providers are configured correctly and which models are available from each provider.
 
 ## 🖥️ Installation
 
@@ -130,7 +191,7 @@ task_notes_LLM = [
 
 When conducting research, **the choice of model can significantly impact the quality of results**. More powerful models tend to have higher accuracy, better reasoning capabilities, and better report generation. If computational resources allow, prioritize the use of advanced models such as o1-(mini/preview) or similar state-of-the-art large language models.
 
-However, **it’s important to balance performance and cost-effectiveness**. While powerful models may yield better results, they are often more expensive and time-consuming to run. Consider using them selectively—for instance, for key experiments or final analyses—while relying on smaller, more efficient models for iterative tasks or initial prototyping.
+However, **it's important to balance performance and cost-effectiveness**. While powerful models may yield better results, they are often more expensive and time-consuming to run. Consider using them selectively—for instance, for key experiments or final analyses—while relying on smaller, more efficient models for iterative tasks or initial prototyping.
 
 When resources are limited, **optimize by fine-tuning smaller models** on your specific dataset or combining pre-trained models with task-specific prompts to achieve the desired balance between performance and computational efficiency.
 
