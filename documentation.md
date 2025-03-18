@@ -102,11 +102,13 @@ Agent Laboratory requires API keys for accessing LLM services. You can provide t
    ```bash
    export OPENAI_API_KEY="your_openai_api_key"
    export DEEPSEEK_API_KEY="your_deepseek_api_key"
+   export ANTHROPIC_API_KEY="your_anthropic_api_key"
+   export GOOGLE_API_KEY="your_google_api_key"
    ```
 
 2. **Command-line Arguments**:
    ```bash
-   python ai_lab_repo.py --api-key "your_openai_api_key" --deepseek-api-key "your_deepseek_api_key"
+   python ai_lab_repo.py --api-key "your_openai_api_key" --deepseek-api-key "your_deepseek_api_key" --anthropic-api-key "your_anthropic_api_key" --google-api-key "your_google_api_key"
    ```
 
 #### Model Selection
@@ -118,11 +120,28 @@ python ai_lab_repo.py --llm-backend "o1-mini" --research-topic "Your research to
 ```
 
 Available options include:
-- "o1" (OpenAI flagship model)
-- "o1-preview"
-- "o1-mini"
-- "gpt-4o"
-- "deepseek-chat"
+- **OpenAI models**:
+  - "o1" (OpenAI flagship model)
+  - "o1-preview"
+  - "o1-mini"
+  - "gpt-4o"
+  - "gpt-4o-mini"
+- **Anthropic models**:
+  - "claude-3-5-sonnet"
+  - "claude-3-opus"
+  - "claude-3-sonnet"
+  - "claude-3-haiku"
+- **Google Gemini models**:
+  - "gemini-pro" (Maps to gemini-1.5-pro)
+  - "gemini-ultra" (Maps to gemini-1.5-pro as fallback)
+  - "gemini-1.5-pro"
+  - "gemini-1.5-flash" (Faster, slightly less capable)
+  - "gemini-2.0-flash" (Latest, good balance of speed and capability)
+- **DeepSeek models**:
+  - "deepseek-chat"
+  - "deepseek-coder"
+- **Ollama models**:
+  - Any model available in your local Ollama instance (e.g., "llama3", "mistral", "phi3")
 
 #### Other Configuration Options
 
@@ -134,6 +153,79 @@ Additional configuration options can be specified through command-line arguments
 - `--num-papers-lit-review "5"`: Sets the number of papers to include in literature review
 - `--mlesolver-max-steps "3"`: Sets the maximum number of optimization steps for MLESolver
 - `--papersolver-max-steps "5"`: Sets the maximum number of optimization steps for PaperSolver
+
+### 🔧 LLM Provider Configuration
+
+Agent Laboratory supports multiple LLM providers through a unified interface. This section provides detailed configuration steps for each supported provider.
+
+#### OpenAI Configuration
+
+1. Obtain an API key from [OpenAI platform](https://platform.openai.com/)
+2. Set the API key in your environment:
+   ```bash
+   export OPENAI_API_KEY="your_openai_api_key"
+   ```
+3. Or provide it as a command-line argument:
+   ```bash
+   python ai_lab_repo.py --api-key "your_openai_api_key" --llm-backend "o1-mini"
+   ```
+
+#### Anthropic Configuration
+
+1. Obtain an API key from [Anthropic console](https://console.anthropic.com/)
+2. Set the API key in your environment:
+   ```bash
+   export ANTHROPIC_API_KEY="your_anthropic_api_key"
+   ```
+3. Or provide it as a command-line argument:
+   ```bash
+   python ai_lab_repo.py --anthropic-api-key "your_anthropic_api_key" --llm-backend "claude-3-sonnet"
+   ```
+
+#### Google Gemini Configuration
+
+1. Obtain an API key from [Google AI Studio](https://ai.google.dev/)
+2. Set the API key in your environment:
+   ```bash
+   export GOOGLE_API_KEY="your_google_api_key"
+   ```
+3. Or provide it as a command-line argument:
+   ```bash
+   python ai_lab_repo.py --google-api-key "your_google_api_key" --llm-backend "gemini-2.0-flash"
+   ```
+
+#### DeepSeek Configuration
+
+1. Obtain an API key from [DeepSeek platform](https://platform.deepseek.com/)
+2. Set the API key in your environment:
+   ```bash
+   export DEEPSEEK_API_KEY="your_deepseek_api_key"
+   ```
+3. Or provide it as a command-line argument:
+   ```bash
+   python ai_lab_repo.py --deepseek-api-key "your_deepseek_api_key" --llm-backend "deepseek-chat"
+   ```
+
+#### Ollama Configuration
+
+1. [Install Ollama](https://ollama.com/download) on your system
+2. Pull the models you want to use:
+   ```bash
+   ollama pull llama3
+   ollama pull mistral
+   ```
+3. Start the Ollama server:
+   ```bash
+   ollama serve
+   ```
+4. Configure the Ollama host in your environment (if not using default):
+   ```bash
+   export OLLAMA_HOST="http://localhost:11434"
+   ```
+5. Run Agent Laboratory with an Ollama model:
+   ```bash
+   python ai_lab_repo.py --llm-backend "llama3" --research-topic "Your research topic"
+   ```
 
 ### 🚀 Running Research Projects
 
@@ -430,29 +522,69 @@ The system currently supports the following LLM backends:
    - o1-preview
    - o1-mini
    - gpt-4o
+   - gpt-4o-mini
 
-2. **DeepSeek Models**:
-   - deepseek-chat (deepseek-v3)
+2. **Anthropic Models**:
+   - claude-3-5-sonnet
+   - claude-3-opus
+   - claude-3-sonnet
+   - claude-3-haiku
+
+3. **Google Gemini Models**:
+   - gemini-pro (maps to gemini-1.5-pro)
+   - gemini-ultra (maps to gemini-1.5-pro as fallback)
+   - gemini-1.5-pro
+   - gemini-1.5-flash
+   - gemini-2.0-flash
+
+4. **DeepSeek Models**:
+   - deepseek-chat
+   - deepseek-coder
+
+5. **Ollama Models**:
+   - Any model available in your local Ollama instance
+   - Examples: llama3, mistral, phi3, gemma, etc.
 
 #### API Handling
 
-The LLM integration is implemented in `inference.py` with the following features:
+The LLM integration is implemented with a provider-based architecture:
 
-- **Unified Interface**: The `query_model()` function provides a consistent interface for all LLM providers
+- **Provider Interface**: All LLM providers implement a common interface defined in `llm_providers/base.py`
+- **Provider Registry**: LLM providers are registered and managed by the `LLMManager` class
 - **Authentication Management**: Handles API keys through environment variables or direct parameters
 - **Error Handling**: Implements retry logic for API failures with configurable timeout
 - **Temperature Control**: Allows adjustment of LLM response randomness
-- **Response Parsing**: Standardizes response handling across different providers
+- **Response Standardization**: Ensures consistent response format across different providers
 
 **Implementation Details**:
 ```python
-def query_model(model_str, prompt, system_prompt, openai_api_key=None, 
-                anthropic_api_key=None, tries=5, timeout=5.0, temp=None, 
-                print_cost=True, version="1.5"):
-    # Authentication handling
-    # API calls with appropriate parameters
-    # Error handling and retries
-    # Response standardization
+# Base provider interface (llm_providers/base.py)
+class LLMProvider(ABC):
+    @abstractmethod
+    def query(self, model, messages, system_prompt=None, temperature=None, max_tokens=None, **kwargs):
+        """Query the LLM provider with the given parameters"""
+        pass
+        
+    @abstractmethod
+    def stream(self, model, messages, system_prompt=None, temperature=None, max_tokens=None, **kwargs):
+        """Stream responses from the LLM provider"""
+        pass
+        
+    @abstractmethod
+    def get_supported_models(self):
+        """Get a list of supported models"""
+        pass
+
+# Provider manager (llm_providers/llm_manager.py)
+class LLMManager:
+    def __init__(self):
+        self.providers = {}
+        # Register providers
+        self.register_provider("openai", OpenAIProvider)
+        self.register_provider("anthropic", AnthropicProvider)
+        self.register_provider("gemini", GeminiProvider)
+        self.register_provider("deepseek", DeepSeekProvider)
+        self.register_provider("ollama", OllamaProvider)
 ```
 
 #### Cost Management
@@ -462,26 +594,30 @@ The system includes sophisticated cost tracking and estimation features:
 - **Token Counting**: Tracks input and output tokens for each model
 - **Cost Calculation**: Uses model-specific pricing to estimate running costs
 - **Usage Reporting**: Provides ongoing cost estimates during execution
+- **Multi-Provider Support**: Tracks costs across different providers (OpenAI, Anthropic, Google Gemini, DeepSeek)
 
 **Implementation Details**:
 ```python
 def curr_cost_est():
+    """
+    Calculate estimated cost based on token usage.
+    Supports models from multiple providers with different pricing structures.
+    """
     costmap_in = {
         "gpt-4o": 2.50 / 1000000,
         "gpt-4o-mini": 0.150 / 1000000,
         "o1-preview": 15.00 / 1000000,
         "o1-mini": 3.00 / 1000000,
-        # Additional models...
+        "claude-3-5-sonnet": 3.00 / 1000000,
+        "deepseek-chat": 1.00 / 1000000,
+        "o1": 15.00 / 1000000,
+        "gemini-pro": 0.125 / 1000000,
+        "gemini-ultra": 1.25 / 1000000,
+        "gemini-1.5-pro": 0.25 / 1000000,
+        "gemini-1.5-flash": 0.125 / 1000000,
+        "gemini-2.0-flash": 0.175 / 1000000,
     }
-    costmap_out = {
-        "gpt-4o": 10.00/ 1000000,
-        "gpt-4o-mini": 0.6 / 1000000,
-        "o1-preview": 60.00 / 1000000,
-        "o1-mini": 12.00 / 1000000,
-        # Additional models...
-    }
-    return sum([costmap_in[_]*TOKENS_IN[_] for _ in TOKENS_IN]) + 
-           sum([costmap_out[_]*TOKENS_OUT[_] for _ in TOKENS_OUT])
+    # ... cost calculation logic ...
 ```
 
 #### Model Configuration
@@ -491,6 +627,29 @@ Agent Laboratory allows for granular configuration of LLM usage:
 - **Phase-Specific Models**: Different models can be specified for different research phases
 - **Model Selection**: Command-line interface for specifying the primary LLM backend
 - **Version Compatibility**: Supports different versions of provider APIs
+
+##### Provider-Specific Model Configuration
+
+- **OpenAI Models**:
+  - Cost-optimized for different tasks (o1-mini for exploration, o1/o1-preview for final results)
+  - Support for system prompts and structured function calling
+  
+- **Anthropic Models**:
+  - Varied capabilities across the Claude family (Opus, Sonnet, Haiku)
+  - Strong reasoning and tool-use capabilities
+  
+- **Google Gemini Models**:
+  - Range from fast (Gemini Flash) to more capable (Gemini Pro)
+  - Gemini 2.0 Flash offers a good balance of speed and capability
+  - Generation configuration supports temperature and max token controls
+  
+- **DeepSeek Models**:
+  - Specialized options for code vs. chat
+  - Cost-effective alternatives to OpenAI models
+  
+- **Ollama Models**:
+  - Local inference for privacy and cost savings
+  - Wide range of open models with different capabilities and resource requirements
 
 ## 📊 System Visualizations
 
